@@ -1,4 +1,4 @@
-package org.example.janusSystem;
+package org.bigDataFactory.janusSystem;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -9,19 +9,18 @@ import java.util.Iterator;
 
 public class JanusGraphConsumer {
 
-    private static JanusGraphConsumer traversaler = null;
+    private static JanusGraphConsumer consumer = null;
     private final GraphTraversalSource g;
     private JanusGraphConsumer() {
-        JanusGraphClient client = JanusGraphClient.getInstance();
-        g = client.getG();
+        g = JanusGraphClient.getInstance().getG();
     }
 
     public static JanusGraphConsumer getInstance() {
-        if(traversaler == null) {
-            traversaler = new JanusGraphConsumer();
+        if(consumer == null) {
+            consumer = new JanusGraphConsumer();
         }
 
-        return traversaler;
+        return consumer;
     }
 
     public void readAllVertexs() {

@@ -1,4 +1,4 @@
-package org.example.janusSystem;
+package org.bigDataFactory.janusSystem;
 
 import org.janusgraph.core.EdgeLabel;
 import org.janusgraph.core.JanusGraphFactory;
@@ -8,19 +8,13 @@ import org.janusgraph.core.schema.JanusGraphManagement;
 
 public class JanusGraphConfiguration {
 
-    private static volatile JanusGraphConfiguration config = null;
+    private static JanusGraphConfiguration config = null;
     private JanusGraphFactory.Builder build = null;
 
-    private static JanusGraphManagement management;
 
-    private JanusGraphConfiguration() {
-        JanusGraphClient client = JanusGraphClient.getInstance();
-        management = client.getGraph().openManagement();
-    }
-
-
-    public static JanusGraphConfiguration getInstance() {
+    public static synchronized JanusGraphConfiguration getInstance() {
         if(config == null) {
+            System.out.println("Config gel");
             config = new JanusGraphConfiguration();
         }
         return config;
@@ -61,30 +55,6 @@ public class JanusGraphConfiguration {
         build.set("index.search.elasticsearch.client-only", "true");
 
         return build;
-    }
-    
-    public PropertyKey addPropertyKey(String label, Class<?> dataType) {
-        return management.makePropertyKey(label).dataType(dataType).make();
-    }
-
-    public EdgeLabel createEdgeLabel(String label, Multiplicity multiplicity) {
-        return management.makeEdgeLabel(label).multiplicity(multiplicity).make();
-    }
-
-    public EdgeLabel createEdgeLabel(String label, Multiplicity multiplicity, PropertyKey signature) {
-        return management.makeEdgeLabel(label).multiplicity(multiplicity).signature(signature).make();
-    }
-
-    public EdgeLabel createEdgeLabel(String label, PropertyKey signature) {
-        return management.makeEdgeLabel(label).signature(signature).make();
-    }
-
-    public EdgeLabel createEdgeLabel(String label) {
-        return management.makeEdgeLabel(label).make();
-    }
-
-    public JanusGraphManagement getManagement() {
-        return management;
     }
 
 

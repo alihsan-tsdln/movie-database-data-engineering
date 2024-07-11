@@ -1,4 +1,4 @@
-package org.example.janusSystem;
+package org.bigDataFactory.janusSystem;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -17,8 +17,6 @@ import java.util.Map;
 
 public class JanusGraphProducer {
     private static JanusGraphProducer producer = null;
-    private final JanusGraphClient client;
-
     private final JanusGraphConfiguration configuration;
     private final GraphTraversalSource g;
 
@@ -31,7 +29,7 @@ public class JanusGraphProducer {
     }
 
     private JanusGraphProducer() {
-        client = JanusGraphClient.getInstance();
+        JanusGraphClient client = JanusGraphClient.getInstance();
         g = client.getG();
         configuration = JanusGraphConfiguration.getInstance();
     }
@@ -54,9 +52,11 @@ public class JanusGraphProducer {
 
         try {
 
-            JanusGraphManagement management = configuration.getManagement();
+            JanusGraphClient client = JanusGraphClient.getInstance();
 
-            final PropertyKey name = configuration.addPropertyKey("name", String.class);
+            JanusGraphManagement management = client.getGraph().openManagement();
+
+            final PropertyKey name = management.makePropertyKey("name").dataType(String.class).make();
             JanusGraphManagement.IndexBuilder idx = management.buildIndex("name", Vertex.class).addKey(name);
             if (uniqueNameCompositeIndex)
                 idx.unique();
@@ -88,18 +88,17 @@ public class JanusGraphProducer {
         catch (SchemaViolationException e) {
             e.printStackTrace();
         }
-
-        JanusGraphManagement management = client.getGraph().openManagement();
+        JanusGraphManagement management = JanusGraphClient.getInstance().getGraph().openManagement();
         System.out.println(management.printSchema());
     }
 
     public void deleteAllData() throws BackendException {
-        JanusGraphFactory.drop(client.getGraph());
+        JanusGraphFactory.drop(JanusGraphClient.getInstance().getGraph());
 
     }
 
     public void addAllGodsData() {
-        JanusGraphTransaction tx = client.getGraph().newTransaction();
+        JanusGraphTransaction tx = JanusGraphClient.getInstance().getGraph().newTransaction();
         // vertices
 
         Vertex saturn = tx.addVertex(T.label, "titan", "name", "saturn", "age", 10000);

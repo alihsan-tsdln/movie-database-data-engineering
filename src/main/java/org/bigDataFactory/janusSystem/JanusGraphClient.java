@@ -1,33 +1,30 @@
-package org.example.janusSystem;
+package org.bigDataFactory.janusSystem;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.janusgraph.core.JanusGraph;
 
 public class JanusGraphClient {
-    private static volatile JanusGraphClient client = null;
+    private static JanusGraphClient client = null;
     private static GraphTraversalSource g;
     private static JanusGraph graph;
 
     private JanusGraphClient() {
-
-        g = createConnection();
+        graph = JanusGraphConfiguration.getInstance().config("cql","janusgraph","8182", "none", true).open();
+        g = graph.traversal();
     }
 
-    public static JanusGraphClient getInstance() {
+    public static synchronized JanusGraphClient getInstance() {
         if(client == null) {
+            System.out.println("Geldim say");
             client = new JanusGraphClient();
         }
         return client;
     }
 
-    private GraphTraversalSource createConnection() {
-        JanusGraphConfiguration configuration = JanusGraphConfiguration.getInstance();
-        graph = configuration.config("cql","janusgraph","8182", "none", true).open();
-        return graph.traversal();
-    }
-
-    public void closeConnection(){
+    public void closeConnection() throws Exception {
         g.tx().commit();
+        g.tx().close();
+        g.close();
         graph.close();
     }
 
