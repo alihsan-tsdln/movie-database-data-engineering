@@ -92,7 +92,7 @@ public class SparkConverter {
         return spark.createDataFrame(moviesDataList, schema);
     }
 
-    private void showCollegues(Dataset<Row> cast, Dataset<Row> crew, List<Row> movie_ids) {
+    private void showCollegues(Dataset<Row> cast, Dataset<Row> crew, List<Row> movie_idsg) {
         List<Row> movie_ids = cast.select("movie_id").collectAsList();
 
         for(Row i : movie_ids) {

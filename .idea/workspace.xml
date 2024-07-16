@@ -5,13 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="342c41d1-17ff-41c8-a787-371e292fd690" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/GetMovieData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/Application.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphProducer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphProducer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/sparkSystem/SparkConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/sparkSystem/SparkConverter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -125,7 +119,7 @@
       <workItem from="1720533942621" duration="1810000" />
       <workItem from="1720593354522" duration="29358000" />
       <workItem from="1720679747346" duration="26915000" />
-      <workItem from="1720710161519" duration="43478000" />
+      <workItem from="1720710161519" duration="44310000" />
     </task>
     <servers />
   </component>
