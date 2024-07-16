@@ -1,10 +1,6 @@
 package org.bigDataFactory.janusSystem;
 
-import org.janusgraph.core.EdgeLabel;
 import org.janusgraph.core.JanusGraphFactory;
-import org.janusgraph.core.Multiplicity;
-import org.janusgraph.core.PropertyKey;
-import org.janusgraph.core.schema.JanusGraphManagement;
 
 public class JanusGraphConfiguration {
 
@@ -14,7 +10,6 @@ public class JanusGraphConfiguration {
 
     public static synchronized JanusGraphConfiguration getInstance() {
         if(config == null) {
-            System.out.println("Config gel");
             config = new JanusGraphConfiguration();
         }
         return config;
@@ -25,6 +20,8 @@ public class JanusGraphConfiguration {
         build.set("storage.backend", backend);
         build.set("storage.hostname", hostname);
         build.set("storage.port", port);
+        build.set("schema.default","default");
+        build.set("schema.constraints",false);
 
         return build;
     }

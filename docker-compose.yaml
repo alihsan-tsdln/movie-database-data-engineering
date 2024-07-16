@@ -13,24 +13,24 @@
 # limitations under the License.
 
 services:
-  janusgraph:
-    image: docker.io/janusgraph/janusgraph:latest
-    container_name: jce-janusgraph
-    environment:
-      JANUS_PROPS_TEMPLATE: cql
+  #janusgraph:
+    #image: docker.io/janusgraph/janusgraph:latest
+    #container_name: jce-janusgraph
+    #environment:
+      #JANUS_PROPS_TEMPLATE: cql
       #cql-es
-      janusgraph.storage.hostname: jce-cassandra
+      #janusgraph.storage.hostname: jce-cassandra
       #janusgraph.index.search.hostname: jce-elastic
-    ports:
-      - "8182:8182"
-    networks:
-      - jce-network
+    #ports:
+      #- "8182:8182"
+    #networks:
+      #- jce-network
 
   cassandra:
     image: cassandra:3
     container_name: jce-cassandra
-    depends_on:
-      - janusgraph
+    #depends_on:
+    #  - janusgraph
     ports:
       - "9042:9042"
       - "9160:9160"

@@ -9,7 +9,7 @@ public class JanusGraphClient {
     private static JanusGraph graph;
 
     private JanusGraphClient() {
-        graph = JanusGraphConfiguration.getInstance().config("cql","janusgraph","8182", "none", true).open();
+        graph = JanusGraphConfiguration.getInstance().config("cql","janusgraph","8182").open();
         g = graph.traversal();
     }
 
