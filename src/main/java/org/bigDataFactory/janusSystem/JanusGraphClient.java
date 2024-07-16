@@ -15,7 +15,6 @@ public class JanusGraphClient {
 
     public static synchronized JanusGraphClient getInstance() {
         if(client == null) {
-            System.out.println("Geldim say");
             client = new JanusGraphClient();
         }
         return client;

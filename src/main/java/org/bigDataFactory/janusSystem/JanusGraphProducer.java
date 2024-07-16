@@ -1,6 +1,6 @@
 package org.bigDataFactory.janusSystem;
 
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -10,16 +10,13 @@ import org.janusgraph.core.attribute.Geoshape;
 import org.janusgraph.core.schema.ConsistencyModifier;
 import org.janusgraph.core.schema.JanusGraphManagement;
 import org.janusgraph.diskstorage.BackendException;
-import org.apache.tinkerpop.gremlin.process.traversal.Order;
-
-import java.util.Map;
 
 public class JanusGraphProducer {
     private static JanusGraphProducer producer = null;
     private final JanusGraphConfiguration configuration;
     private final GraphTraversalSource g;
 
-    public static JanusGraphProducer getInstance() {
+    public static synchronized JanusGraphProducer getInstance() {
         if(producer == null) {
             producer = new JanusGraphProducer();
         }
@@ -32,21 +29,6 @@ public class JanusGraphProducer {
         g = client.getG();
         configuration = JanusGraphConfiguration.getInstance();
     }
-
-    public void addVertex(String vertexLabel, Map<String, ?> properties) {
-        GraphTraversal<Vertex, Vertex> vertexBuilder = g.addV(vertexLabel);
-        for (Map.Entry<String, ?> property : properties.entrySet()) {
-            String key = property.getKey();
-            Object value = property.getValue();
-            vertexBuilder.property(key, value);
-        }
-        vertexBuilder.next();
-    }
-
-    public void addEdge(Vertex patent, Vertex assignee, String label) {
-        g.V(patent).addE(label).to(assignee).next();
-    }
-
     public void createSchema(boolean uniqueNameCompositeIndex) {
 
         try {

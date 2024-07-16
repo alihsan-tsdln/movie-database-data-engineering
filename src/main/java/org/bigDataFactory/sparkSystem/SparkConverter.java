@@ -18,9 +18,24 @@ public class SparkConverter {
 
     SparkSession spark;
 
-    public SparkConverter() {
-        spark = SparkSession.builder().master("local").getOrCreate();
+    private static SparkConverter converter;
 
+    private SparkConverter() {
+        spark = SparkSession.builder().master("local").getOrCreate();
+    }
+
+    public static synchronized SparkConverter getInstance() {
+        if(converter == null) {
+            converter = new SparkConverter();
+        }
+        return converter;
+    }
+
+    public void closeSpark() {
+        spark.stop();
+    }
+
+    public void fetchDataCsv() {
         Dataset<Row> df = spark.read().option("header",true).csv("src/main/resources/Movies/credits.csv");
 
         StructType schemaCast = new StructType()
@@ -49,20 +64,11 @@ public class SparkConverter {
         Dataset<Row> dfCrew = createDataset(df, "crew", schemaCrew);
 
 
-        dfCast.printSchema();
-        dfCast.show();
-
-        dfCrew.printSchema();
-        dfCrew.show();
-
-        spark.stop();
-        
-
-        //df.show();
+        showCollegues(dfCast, dfCrew);
     }
 
 
-    public Row createRowfromFactory(@NotNull JSONObject object, String id) {
+    private Row createRowfromFactory(@NotNull JSONObject object, String id) {
         Iterator<String> it = object.keys();
         List<Object> valueOfRow = new ArrayList<>();
         while (it.hasNext())
@@ -72,7 +78,7 @@ public class SparkConverter {
     }
 
 
-    public Dataset<Row> createDataset(Dataset<Row> df, String columnName, StructType schema) {
+    private Dataset<Row> createDataset(Dataset<Row> df, String columnName, StructType schema) {
         int movieIdx = 0;
         List<Row> listOfData = df.select(columnName).collectAsList();
         List<Row> movie_ids = df.select("id").collectAsList();
@@ -84,5 +90,14 @@ public class SparkConverter {
             movieIdx++;
         }
         return spark.createDataFrame(moviesDataList, schema);
+    }
+
+    private void showCollegues(Dataset<Row> cast, Dataset<Row> crew, List<Row> movie_ids) {
+        List<Row> movie_ids = cast.select("movie_id").collectAsList();
+
+        for(Row i : movie_ids) {
+            cast.where("movie_id = " + i.getString(0)).show();
+        }
+
     }
 }
