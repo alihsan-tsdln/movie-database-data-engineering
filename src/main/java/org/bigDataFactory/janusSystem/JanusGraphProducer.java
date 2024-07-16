@@ -10,7 +10,6 @@ import org.janusgraph.core.attribute.Geoshape;
 import org.janusgraph.core.schema.ConsistencyModifier;
 import org.janusgraph.core.schema.JanusGraphManagement;
 import org.janusgraph.diskstorage.BackendException;
-import org.jetbrains.annotations.NotNull;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 
 import java.util.Map;
@@ -34,7 +33,7 @@ public class JanusGraphProducer {
         configuration = JanusGraphConfiguration.getInstance();
     }
 
-    public void addVertex(String vertexLabel, @NotNull Map<String, ?> properties) {
+    public void addVertex(String vertexLabel, Map<String, ?> properties) {
         GraphTraversal<Vertex, Vertex> vertexBuilder = g.addV(vertexLabel);
         for (Map.Entry<String, ?> property : properties.entrySet()) {
             String key = property.getKey();
