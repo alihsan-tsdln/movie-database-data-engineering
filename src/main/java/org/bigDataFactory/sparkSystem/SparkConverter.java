@@ -1,17 +1,20 @@
 package org.bigDataFactory.sparkSystem;
 
+import org.apache.spark.api.java.function.ForeachPartitionFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructType;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.bigDataFactory.janusSystem.JanusGraphClient;
+import org.bigDataFactory.janusSystem.JanusGraphConsumer;
 import org.janusgraph.core.JanusGraphTransaction;
+import org.janusgraph.core.JanusGraphVertex;
+import org.janusgraph.core.schema.JanusGraphManagement;
+import org.janusgraph.graphdb.database.management.ManagementSystem;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,15 +28,9 @@ public class SparkConverter {
     SparkSession spark;
 
     private static SparkConverter converter;
-    JanusGraphClient client;
-    GraphTraversalSource g;
-    JanusGraphTransaction tx;
 
     private SparkConverter() {
         spark = SparkSession.builder().master("local").getOrCreate();
-        client = JanusGraphClient.getInstance();
-        g = client.getG();
-        tx = client.getGraph().newTransaction();
     }
 
     public static synchronized SparkConverter getInstance() {
@@ -75,8 +72,41 @@ public class SparkConverter {
         Dataset<Row> dfCast = createDataset(df, "cast", schemaCast);
         Dataset<Row> dfCrew = createDataset(df, "crew", schemaCrew);
 
-        addMovieToGraph(df.select("id").collectAsList());
-        addCollegues(dfCast, dfCrew, df.select("id").collectAsList());
+        dfCast.show();
+        //dfCrew.show();
+
+        dfCast.foreachPartition((ForeachPartitionFunction<Row>) iterator -> {
+            try {
+                System.out.println("Came Partition");
+                JanusGraphClient client = new JanusGraphClient();
+                //new JanusGraphProducer().createSchema();
+                JanusGraphManagement management = JanusGraphClient.getGraph().openManagement();
+                management.buildIndex("byName", Vertex.class).addKey(management.getPropertyKey("name")).buildCompositeIndex();
+                ManagementSystem.awaitGraphIndexStatus(JanusGraphClient.getGraph(), "byName").call();
+                management.commit();
+                GraphTraversalSource g = JanusGraphClient.getG();
+                JanusGraphTransaction tx = JanusGraphClient.getGraph().newTransaction();
+
+                while (iterator.hasNext()) {
+                    Row info = iterator.next();
+                    JanusGraphVertex v = tx.addVertex("cast");
+                    if(!g.V().hasLabel("cast").has("id", info.getInt(6)).hasNext()) {
+                        v.property("id", info.getInt(6));
+                        v.property("name", info.getString(4));
+                        v.property("gender", info.getInt(2));
+                        v.property("profile_path", info.getString(5));
+                    }
+                }
+                JanusGraphConsumer.getInstance().readAllVertexs();
+                client.closeConnection();
+            }
+            catch (Exception e) {
+                System.out.println(e.getLocalizedMessage());
+            }
+        });
+
+        //addMovieToGraph(df.select("id").collectAsList());
+        //addCollegues(dfCast, dfCrew, df.select("id").collectAsList());
     }
 
 
@@ -105,14 +135,7 @@ public class SparkConverter {
         return spark.createDataFrame(moviesDataList, schema);
     }
 
-    private void addMovieToGraph(List<Row> movie_ids) {
-        for(Row i : movie_ids)
-            tx.addVertex(T.label, "movie", "id", i.getString(0));
-        tx.commit();
-
-    }
-
-    private void addCollegues(Dataset<Row> cast, Dataset<Row> crew, List<Row> movie_ids) {
+    /*private void addCollegues(Dataset<Row> cast, Dataset<Row> crew, List<Row> movie_ids) {
         GraphTraversal<Vertex, Object> movies = g.V().hasLabel("movie").id();
         for(Row i : movie_ids) {
             ArrayList<Vertex> colleagues = new ArrayList<>();
@@ -147,5 +170,5 @@ public class SparkConverter {
             for(Vertex k : colleagues)
                 director.addEdge("directed", k, "movie_id", movieId);
         }
-    }
+    }*/
 }

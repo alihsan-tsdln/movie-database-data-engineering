@@ -12,7 +12,7 @@ public class JanusGraphConsumer {
     private static JanusGraphConsumer consumer = null;
     private final GraphTraversalSource g;
     private JanusGraphConsumer() {
-        g = JanusGraphClient.getInstance().getG();
+        g = JanusGraphClient.getG();
     }
 
     public static JanusGraphConsumer getInstance() {
@@ -24,7 +24,7 @@ public class JanusGraphConsumer {
     }
 
     public void readAllVertexs() {
-        GraphTraversal<Vertex, Vertex> vertices = g.V();
+        GraphTraversal<Vertex, Vertex> vertices = g.V().hasLabel("cast").has("name", "Tom Hanks");
 
         while (vertices.hasNext()) {
             Vertex v = vertices.next();

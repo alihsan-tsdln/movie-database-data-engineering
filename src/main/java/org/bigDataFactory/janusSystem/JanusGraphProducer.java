@@ -12,30 +12,18 @@ import org.janusgraph.core.schema.JanusGraphManagement;
 import org.janusgraph.diskstorage.BackendException;
 
 public class JanusGraphProducer {
-    private static JanusGraphProducer producer = null;
     private final JanusGraphConfiguration configuration;
     private final GraphTraversalSource g;
 
-    public static synchronized JanusGraphProducer getInstance() {
-        if(producer == null) {
-            producer = new JanusGraphProducer();
-        }
-
-        return producer;
-    }
-
-    private JanusGraphProducer() {
-        JanusGraphClient client = JanusGraphClient.getInstance();
-        g = client.getG();
-        configuration = JanusGraphConfiguration.getInstance();
+    public JanusGraphProducer() {
+        g = JanusGraphClient.getG();
+        configuration = new JanusGraphConfiguration();
     }
     public void createSchema(boolean uniqueNameCompositeIndex) {
 
         try {
 
-            JanusGraphClient client = JanusGraphClient.getInstance();
-
-            JanusGraphManagement management = client.getGraph().openManagement();
+            JanusGraphManagement management = JanusGraphClient.getGraph().openManagement();
 
             final PropertyKey name = management.makePropertyKey("name").dataType(String.class).make();
             JanusGraphManagement.IndexBuilder idx = management.buildIndex("name", Vertex.class).addKey(name);
@@ -69,17 +57,55 @@ public class JanusGraphProducer {
         catch (SchemaViolationException e) {
             e.printStackTrace();
         }
-        JanusGraphManagement management = JanusGraphClient.getInstance().getGraph().openManagement();
+        JanusGraphManagement management = JanusGraphClient.getGraph().openManagement();
+        System.out.println(management.printSchema());
+    }
+
+    public void createSchema() {
+
+        JanusGraphManagement management = JanusGraphClient.getGraph().openManagement();
+
+        final VertexLabel crew = management.makeVertexLabel("crew").make();
+        final VertexLabel cast = management.makeVertexLabel("cast").make();
+        final VertexLabel movie = management.makeVertexLabel("movie").make();
+
+        final EdgeLabel acted = management.makeEdgeLabel("acted").unidirected().make();
+        final EdgeLabel worked = management.makeEdgeLabel("worked").unidirected().make();
+
+
+        final PropertyKey cast_id = management.makePropertyKey("cast_id").dataType(Integer.class).make();
+        final PropertyKey character = management.makePropertyKey("character").dataType(String.class).make();
+        final PropertyKey gender = management.makePropertyKey("gender").dataType(Integer.class).make();
+        final PropertyKey credit_id = management.makePropertyKey("credit_id").dataType(String.class).make();
+        final PropertyKey name = management.makePropertyKey("name").dataType(String.class).make();
+        final PropertyKey profile_path = management.makePropertyKey("profile_path").dataType(String.class).make();
+        final PropertyKey id = management.makePropertyKey("id").dataType(Integer.class).make();
+        final PropertyKey order = management.makePropertyKey("order").dataType(Integer.class).make();
+        final PropertyKey movie_id = management.makePropertyKey("movie_id").dataType(String.class).make();
+        final PropertyKey department = management.makePropertyKey("department").dataType(String.class).make();
+        final PropertyKey job = management.makePropertyKey("job").dataType(String.class).make();
+
+        management.addProperties(cast, name, gender, id, profile_path);
+        management.addProperties(crew, name, gender, id, profile_path);
+        management.addProperties(acted, cast_id, character, credit_id, order);
+        management.addProperties(worked, credit_id, department, job);
+        management.addProperties(movie, movie_id);
+
+        management.buildIndex("byId", Vertex.class).addKey(id).buildCompositeIndex();
+        management.buildIndex("byName", Vertex.class).addKey(name).buildCompositeIndex();
+
+        management.commit();
+
         System.out.println(management.printSchema());
     }
 
     public void deleteAllData() throws BackendException {
-        JanusGraphFactory.drop(JanusGraphClient.getInstance().getGraph());
+        JanusGraphFactory.drop(JanusGraphClient.getGraph());
 
     }
 
     public void addAllGodsData() {
-        JanusGraphTransaction tx = JanusGraphClient.getInstance().getGraph().newTransaction();
+        JanusGraphTransaction tx = JanusGraphClient.getGraph().newTransaction();
         // vertices
 
         Vertex saturn = tx.addVertex(T.label, "titan", "name", "saturn", "age", 10000);
