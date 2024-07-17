@@ -8,13 +8,10 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructType;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.bigDataFactory.janusSystem.JanusGraphClient;
 import org.bigDataFactory.janusSystem.JanusGraphConsumer;
 import org.janusgraph.core.JanusGraphTransaction;
 import org.janusgraph.core.JanusGraphVertex;
-import org.janusgraph.core.schema.JanusGraphManagement;
-import org.janusgraph.graphdb.database.management.ManagementSystem;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -44,8 +41,12 @@ public class SparkConverter {
         spark.stop();
     }
 
-    public void fetchDataCsv() {
+    public void fetchDataCsv() throws Exception {
         Dataset<Row> df = spark.read().option("header",true).csv("src/main/resources/Movies/credits.csv");
+
+        new JanusGraphClient();
+        //new JanusGraphProducer().createSchema();
+        System.out.println(JanusGraphClient.getGraph().openManagement().printIndexes());
 
         StructType schemaCast = new StructType()
                 .add("cast_id", DataTypes.IntegerType, false)
@@ -73,31 +74,33 @@ public class SparkConverter {
         Dataset<Row> dfCrew = createDataset(df, "crew", schemaCrew);
 
         dfCast.show();
+        System.out.println("CAST SAYISI");
+        System.out.println(dfCast.count());
         //dfCrew.show();
 
         dfCast.foreachPartition((ForeachPartitionFunction<Row>) iterator -> {
             try {
                 System.out.println("Came Partition");
                 JanusGraphClient client = new JanusGraphClient();
-                //new JanusGraphProducer().createSchema();
-                JanusGraphManagement management = JanusGraphClient.getGraph().openManagement();
-                management.buildIndex("byName", Vertex.class).addKey(management.getPropertyKey("name")).buildCompositeIndex();
-                ManagementSystem.awaitGraphIndexStatus(JanusGraphClient.getGraph(), "byName").call();
-                management.commit();
                 GraphTraversalSource g = JanusGraphClient.getG();
                 JanusGraphTransaction tx = JanusGraphClient.getGraph().newTransaction();
+                long startTime = System.currentTimeMillis();
 
                 while (iterator.hasNext()) {
                     Row info = iterator.next();
-                    JanusGraphVertex v = tx.addVertex("cast");
                     if(!g.V().hasLabel("cast").has("id", info.getInt(6)).hasNext()) {
+                        JanusGraphVertex v = tx.addVertex("cast");
                         v.property("id", info.getInt(6));
                         v.property("name", info.getString(4));
                         v.property("gender", info.getInt(2));
                         v.property("profile_path", info.getString(5));
+                        tx.commit();
                     }
                 }
-                JanusGraphConsumer.getInstance().readAllVertexs();
+                System.out.println();
+                System.out.println("TIME CHANGE");
+                System.out.println(System.currentTimeMillis() - startTime);
+                System.out.println();
                 client.closeConnection();
             }
             catch (Exception e) {
@@ -105,8 +108,7 @@ public class SparkConverter {
             }
         });
 
-        //addMovieToGraph(df.select("id").collectAsList());
-        //addCollegues(dfCast, dfCrew, df.select("id").collectAsList());
+        JanusGraphConsumer.getInstance().readAllVertexes();
     }
 
 

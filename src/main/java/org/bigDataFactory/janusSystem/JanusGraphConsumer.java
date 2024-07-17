@@ -23,8 +23,8 @@ public class JanusGraphConsumer {
         return consumer;
     }
 
-    public void readAllVertexs() {
-        GraphTraversal<Vertex, Vertex> vertices = g.V().hasLabel("cast").has("name", "Tom Hanks");
+    public void readAllVertexes() {
+        Iterator<Vertex> vertices = g.V().has("name", "Tom Hanks");
 
         while (vertices.hasNext()) {
             Vertex v = vertices.next();

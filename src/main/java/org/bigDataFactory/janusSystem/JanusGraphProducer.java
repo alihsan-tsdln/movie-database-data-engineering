@@ -8,7 +8,9 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.*;
 import org.janusgraph.core.attribute.Geoshape;
 import org.janusgraph.core.schema.ConsistencyModifier;
+import org.janusgraph.core.schema.Index;
 import org.janusgraph.core.schema.JanusGraphManagement;
+import org.janusgraph.core.schema.SchemaAction;
 import org.janusgraph.diskstorage.BackendException;
 
 public class JanusGraphProducer {
@@ -61,7 +63,7 @@ public class JanusGraphProducer {
         System.out.println(management.printSchema());
     }
 
-    public void createSchema() {
+    public void createSchema() throws InterruptedException {
 
         JanusGraphManagement management = JanusGraphClient.getGraph().openManagement();
 
@@ -85,18 +87,26 @@ public class JanusGraphProducer {
         final PropertyKey department = management.makePropertyKey("department").dataType(String.class).make();
         final PropertyKey job = management.makePropertyKey("job").dataType(String.class).make();
 
+        //management.setConsistency(name, ConsistencyModifier.DEFAULT);
+
         management.addProperties(cast, name, gender, id, profile_path);
         management.addProperties(crew, name, gender, id, profile_path);
         management.addProperties(acted, cast_id, character, credit_id, order);
         management.addProperties(worked, credit_id, department, job);
         management.addProperties(movie, movie_id);
 
-        management.buildIndex("byId", Vertex.class).addKey(id).buildCompositeIndex();
-        management.buildIndex("byName", Vertex.class).addKey(name).buildCompositeIndex();
+        final Index byId = management.buildIndex("byId", Vertex.class).addKey(id).buildCompositeIndex();
+        final Index byName = management.buildIndex("byName", Vertex.class).addKey(name).buildCompositeIndex();
 
-        management.commit();
+        //ManagementSystem.awaitGraphIndexStatus(JanusGraphClient.getGraph(), "byId").call();
+        //ManagementSystem.awaitGraphIndexStatus(JanusGraphClient.getGraph(), "byName").call();
+
+        management.updateIndex(byId, SchemaAction.ENABLE_INDEX);
+        management.updateIndex(byName, SchemaAction.ENABLE_INDEX);
 
         System.out.println(management.printSchema());
+
+        management.commit();
     }
 
     public void deleteAllData() throws BackendException {
