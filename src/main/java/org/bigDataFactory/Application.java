@@ -9,5 +9,6 @@ public class Application {
         SparkConverter spark = SparkConverter.getInstance();
         spark.fetchDataCsv();
         spark.closeSpark();
+
     }
 }

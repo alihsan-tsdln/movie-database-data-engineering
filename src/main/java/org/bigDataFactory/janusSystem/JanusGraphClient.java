@@ -9,11 +9,12 @@ public class JanusGraphClient {
 
     public JanusGraphClient() {
         graph = new JanusGraphConfiguration().config("cql","0.0.0.0","9042").open();
-        System.out.println("opened");
+        System.out.println("opened client");
         g = graph.traversal();
     }
 
     public void closeConnection() throws Exception {
+        System.out.println("closed client");
         g.tx().commit();
         g.tx().close();
         g.close();

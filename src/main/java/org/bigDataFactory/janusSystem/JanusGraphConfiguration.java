@@ -6,6 +6,7 @@ public class JanusGraphConfiguration {
     private JanusGraphFactory.Builder build = null;
 
     public JanusGraphFactory.Builder config(String backend, String hostname, String port) {
+
         build = JanusGraphFactory.build();
         build.set("storage.backend", backend);
         build.set("storage.hostname", hostname);
@@ -18,11 +19,11 @@ public class JanusGraphConfiguration {
         build.set("query.batch",true);
         build.set("cache.db-cache", true);
         build.set("cache.db-cache-clean-wait", 20);
-        build.set("cache.db-cache-time", 180000);
+        build.set("cache.db-cache-time", 500000);
         build.set("cache.db-cache-size", 0.5);
         build.set("cluster.max-partitions",6);
         build.set("ids.authority.wait-time", 1000);
-        build.set("query.force-index", true);
+        //build.set("query.force-index", true);
         return build;
     }
 

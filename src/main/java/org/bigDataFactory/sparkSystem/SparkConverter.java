@@ -8,8 +8,9 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructType;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.bigDataFactory.janusSystem.JanusGraphClient;
-import org.bigDataFactory.janusSystem.JanusGraphConsumer;
+import org.bigDataFactory.janusSystem.JanusGraphProducer;
 import org.janusgraph.core.JanusGraphTransaction;
 import org.janusgraph.core.JanusGraphVertex;
 import org.jetbrains.annotations.NotNull;
@@ -41,12 +42,36 @@ public class SparkConverter {
         spark.stop();
     }
 
-    public void fetchDataCsv() throws Exception {
-        Dataset<Row> df = spark.read().option("header",true).csv("src/main/resources/Movies/credits.csv");
+    private void loadVertexesToJanus(Dataset<Row> df, List<Object> ids) {
 
-        new JanusGraphClient();
-        //new JanusGraphProducer().createSchema();
-        System.out.println(JanusGraphClient.getGraph().openManagement().printIndexes());
+        df.repartition(10).select("id","name","gender","profile_path").dropDuplicates("id").foreachPartition((ForeachPartitionFunction<Row>) iterator -> {
+            try {
+                System.out.println("Came Vertex Partition");
+                JanusGraphClient client = new JanusGraphClient();
+                JanusGraphTransaction tx = JanusGraphClient.getGraph().newTransaction();
+
+                while (iterator.hasNext()) {
+                    Row info = iterator.next();
+                    if (!ids.contains(info.getInt(0))) {
+                        JanusGraphVertex v = tx.addVertex("cast");
+                        v.property("id", info.getInt(0));
+                        v.property("name", info.getString(1));
+                        v.property("gender", info.getInt(2));
+                        v.property("profile_path", info.getString(3));
+                        ids.add(info.getInt(0));
+                    }
+                }
+                tx.commit();
+                client.closeConnection();
+            } catch (Exception e) {
+                System.out.println(e.getLocalizedMessage());
+            }
+        });
+        ids.clear();
+    }
+
+    public void fetchDataCsv() throws Exception {
+        Dataset<Row> df = spark.read().option("header", true).csv("src/main/resources/Movies/credits.csv");
 
         StructType schemaCast = new StructType()
                 .add("cast_id", DataTypes.IntegerType, false)
@@ -70,45 +95,121 @@ public class SparkConverter {
                 .add("movie_id", DataTypes.StringType);
 
 
-        Dataset<Row> dfCast = createDataset(df, "cast", schemaCast);
-        Dataset<Row> dfCrew = createDataset(df, "crew", schemaCrew);
+        Dataset<Row> dfCast = createDataset(df, "cast", schemaCast).distinct();
+        Dataset<Row> dfCrew = createDataset(df, "crew", schemaCrew).distinct();
 
-        dfCast.show();
-        System.out.println("CAST SAYISI");
-        System.out.println(dfCast.count());
+        //dfCast.show();
+        //System.out.println("CAST SAYISI");
+        //System.out.println(dfCast.count());
+        //System.out.println("CREDIT ID SAYISI");
+        //System.out.println(dfCast.dropDuplicates("credit_id").count());
         //dfCrew.show();
 
-        dfCast.foreachPartition((ForeachPartitionFunction<Row>) iterator -> {
+
+        long startTime = System.currentTimeMillis();
+
+        new JanusGraphProducer().createSchema();
+
+        JanusGraphClient client2 = new JanusGraphClient();
+        List<Object> cast_ids = JanusGraphClient.getG().V().hasLabel("cast").values("id").toList();
+        List<Object> movie_ids = JanusGraphClient.getG().V().hasLabel("movie").values("movie_id").toList();
+        List<Object> crew_ids = JanusGraphClient.getG().V().hasLabel("crew").values("id").toList();
+        client2.closeConnection();
+
+        df.select("id").distinct().foreachPartition((ForeachPartitionFunction<Row>) iterator -> {
             try {
-                System.out.println("Came Partition");
+                System.out.println("Came Movie Partition");
                 JanusGraphClient client = new JanusGraphClient();
-                GraphTraversalSource g = JanusGraphClient.getG();
                 JanusGraphTransaction tx = JanusGraphClient.getGraph().newTransaction();
-                long startTime = System.currentTimeMillis();
 
                 while (iterator.hasNext()) {
                     Row info = iterator.next();
-                    if(!g.V().hasLabel("cast").has("id", info.getInt(6)).hasNext()) {
-                        JanusGraphVertex v = tx.addVertex("cast");
-                        v.property("id", info.getInt(6));
-                        v.property("name", info.getString(4));
-                        v.property("gender", info.getInt(2));
-                        v.property("profile_path", info.getString(5));
-                        tx.commit();
+                    if (!movie_ids.contains(info.getString(0))) {
+                        JanusGraphVertex v = tx.addVertex("movie");
+                        v.property("movie_id", info.getString(0));
+                        movie_ids.add(info.getString(0));
                     }
                 }
-                System.out.println();
-                System.out.println("TIME CHANGE");
-                System.out.println(System.currentTimeMillis() - startTime);
-                System.out.println();
+                tx.commit();
                 client.closeConnection();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.out.println(e.getLocalizedMessage());
             }
         });
 
-        JanusGraphConsumer.getInstance().readAllVertexes();
+        movie_ids.clear();
+
+
+        loadVertexesToJanus(dfCast, cast_ids);
+        System.out.println("dfCastIds");
+        System.out.println(cast_ids.size());
+        loadVertexesToJanus(dfCrew, crew_ids);
+        System.out.println("dfCrewIds");
+        System.out.println(crew_ids.size());
+
+
+        dfCast.select("id","movie_id", "cast_id", "character", "credit_id", "order").foreachPartition((ForeachPartitionFunction<Row>) iterator -> {
+            try {
+                System.out.println("Came Cast Partition");
+                JanusGraphClient client = new JanusGraphClient();
+                JanusGraphTransaction tx = JanusGraphClient.getGraph().newTransaction();
+                GraphTraversalSource g = JanusGraphClient.getG();
+
+                while (iterator.hasNext()) {
+                    Row info = iterator.next();
+                    Vertex v = g.V().hasLabel("cast").has("id", info.getInt(0)).next();
+
+                    if(v != null && g.E().hasLabel("acted").has("credit_id", info.getString(4)).hasNext())
+                    {
+                        v.addEdge("acted", tx.getVertex(info.getString(1)), "cast_id", info.getString(2),
+                                "character", info.getString(3), "credit_id", info.getString(4),
+                                "order", info.getString(5));
+                    }
+                }
+                tx.commit();
+                client.closeConnection();
+            } catch (Exception e) {
+                System.out.println(e.getLocalizedMessage());
+            }
+        });
+
+        dfCrew.select("id","movie_id", "credit_id", "department", "job").foreachPartition((ForeachPartitionFunction<Row>) iterator -> {
+            try {
+                System.out.println("Came Crew Partition");
+                JanusGraphClient client = new JanusGraphClient();
+                JanusGraphTransaction tx = JanusGraphClient.getGraph().newTransaction();
+                GraphTraversalSource g = JanusGraphClient.getG();
+
+                while (iterator.hasNext()) {
+                    Row info = iterator.next();
+                    Vertex v = g.V().hasLabel("cast").has("id", info.getInt(0)).next();
+
+                    if(v != null && g.E().hasLabel("worked").has("credit_id", info.getString(2)).hasNext())
+                    {
+                        v.addEdge("worked", tx.getVertex(info.getString(1)),
+                                "credit_id", info.getString(2), "department",
+                                info.getString(3), "job", info.getString(4));
+                    }
+                }
+                tx.commit();
+                client.closeConnection();
+            } catch (Exception e) {
+                System.out.println(e.getLocalizedMessage());
+            }
+        });
+
+
+
+        System.out.println();
+        System.out.println("TIME CHANGE");
+        System.out.println(System.currentTimeMillis() - startTime);
+        System.out.println();
+        client2 = new JanusGraphClient();
+        System.out.println("JANUS VERTEX COUNT");
+        System.out.println(JanusGraphClient.getG().V().count().next());
+        System.out.println("JANUS EDGE COUNT");
+        System.out.println(JanusGraphClient.getG().E().count().next());
+        client2.closeConnection();
     }
 
 
