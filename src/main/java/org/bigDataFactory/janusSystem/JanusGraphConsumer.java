@@ -1,14 +1,7 @@
 package org.bigDataFactory.janusSystem;
 
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
-
-import java.util.Iterator;
-
 public class JanusGraphConsumer {
-
+/*
     private static JanusGraphConsumer consumer = null;
     private final GraphTraversalSource g;
     private JanusGraphConsumer() {
@@ -57,5 +50,5 @@ public class JanusGraphConsumer {
             }
             System.out.println();
         }
-    }
+    }*/
 }

@@ -4,8 +4,8 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.janusgraph.core.JanusGraph;
 
 public class JanusGraphClient {
-    private static GraphTraversalSource g;
-    private static JanusGraph graph;
+    private GraphTraversalSource g;
+    private JanusGraph graph;
 
     public JanusGraphClient() {
         graph = new JanusGraphConfiguration().config("cql","0.0.0.0","9042").open();
@@ -21,11 +21,11 @@ public class JanusGraphClient {
         graph.close();
     }
 
-    public static GraphTraversalSource getG() {
+    public GraphTraversalSource getG() {
         return g;
     }
 
-    public static JanusGraph getGraph() {
+    public JanusGraph getGraph() {
         return graph;
     }
 }
