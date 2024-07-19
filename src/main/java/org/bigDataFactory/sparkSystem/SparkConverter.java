@@ -7,6 +7,7 @@ import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructType;
+import org.apache.spark.util.SizeEstimator;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.bigDataFactory.janusSystem.JanusGraphClient;
@@ -43,8 +44,8 @@ public class SparkConverter {
     }
 
     private void loadVertexesToJanus(Dataset<Row> df, List<Object> ids) {
-
-        df.repartition(10).select("id","name","gender","profile_path").dropDuplicates("id").foreachPartition((ForeachPartitionFunction<Row>) iterator -> {
+        df.select("id","name","gender","profile_path").dropDuplicates("id")
+                .repartition(10).foreachPartition((ForeachPartitionFunction<Row>) iterator -> {
             try {
                 System.out.println("Came Vertex Partition");
                 JanusGraphClient client = new JanusGraphClient();
@@ -98,6 +99,9 @@ public class SparkConverter {
         Dataset<Row> dfCast = createDataset(df, "cast", schemaCast).distinct();
         Dataset<Row> dfCrew = createDataset(df, "crew", schemaCrew).distinct();
 
+        System.out.println("dfCast SIZE");
+        System.out.println(SizeEstimator.estimate(dfCast.select("id","movie_id", "cast_id", "character", "credit_id", "order")));
+
         //dfCast.show();
         //System.out.println("CAST SAYISI");
         //System.out.println(dfCast.count());
@@ -115,6 +119,8 @@ public class SparkConverter {
         List<Object> movie_ids = JanusGraphClient.getG().V().hasLabel("movie").values("movie_id").toList();
         List<Object> crew_ids = JanusGraphClient.getG().V().hasLabel("crew").values("id").toList();
         client2.closeConnection();
+
+        System.out.println(Runtime.getRuntime().freeMemory());
 
         df.select("id").distinct().foreachPartition((ForeachPartitionFunction<Row>) iterator -> {
             try {
@@ -139,21 +145,19 @@ public class SparkConverter {
 
         movie_ids.clear();
 
-
         loadVertexesToJanus(dfCast, cast_ids);
-        System.out.println("dfCastIds");
-        System.out.println(cast_ids.size());
         loadVertexesToJanus(dfCrew, crew_ids);
-        System.out.println("dfCrewIds");
-        System.out.println(crew_ids.size());
 
-
-        dfCast.select("id","movie_id", "cast_id", "character", "credit_id", "order").foreachPartition((ForeachPartitionFunction<Row>) iterator -> {
+        dfCast.select("id","movie_id", "cast_id", "character", "credit_id", "order")
+                .repartition(5)
+                .foreachPartition((ForeachPartitionFunction<Row>) iterator -> {
             try {
                 System.out.println("Came Cast Partition");
                 JanusGraphClient client = new JanusGraphClient();
                 JanusGraphTransaction tx = JanusGraphClient.getGraph().newTransaction();
                 GraphTraversalSource g = JanusGraphClient.getG();
+                System.out.println(SizeEstimator.estimate(iterator));
+                System.out.println(SizeEstimator.estimate(iterator) / Runtime.getRuntime().freeMemory());
 
                 while (iterator.hasNext()) {
                     Row info = iterator.next();
@@ -173,7 +177,9 @@ public class SparkConverter {
             }
         });
 
-        dfCrew.select("id","movie_id", "credit_id", "department", "job").foreachPartition((ForeachPartitionFunction<Row>) iterator -> {
+        dfCrew.select("id","movie_id", "credit_id", "department", "job")
+                .repartition(20)
+                .foreachPartition((ForeachPartitionFunction<Row>) iterator -> {
             try {
                 System.out.println("Came Crew Partition");
                 JanusGraphClient client = new JanusGraphClient();
