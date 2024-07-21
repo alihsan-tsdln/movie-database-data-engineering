@@ -15,8 +15,6 @@ public class JanusGraphClient {
 
     public void closeConnection() throws Exception {
         System.out.println("closed client");
-        g.tx().commit();
-        g.tx().close();
         g.close();
         graph.close();
     }

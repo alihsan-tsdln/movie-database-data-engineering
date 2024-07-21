@@ -13,11 +13,10 @@ import org.janusgraph.core.schema.SchemaAction;
 public class JanusGraphProducer {
 
     public void createSchema() throws Exception {
-
-        new JanusGraphClient();
-        JanusGraphFactory.drop(JanusGraphClient.getGraph());
-        JanusGraphClient client = new JanusGraphClient();
-        JanusGraphManagement management = JanusGraphClient.getGraph().openManagement();
+        JanusGraphClient  client = new JanusGraphClient();
+        JanusGraphFactory.drop(client.getGraph());
+        client = new JanusGraphClient();
+        JanusGraphManagement management = client.getGraph().openManagement();
 
         final VertexLabel crew = management.makeVertexLabel("crew").make();
         final VertexLabel cast = management.makeVertexLabel("cast").make();
@@ -55,8 +54,8 @@ public class JanusGraphProducer {
         management.updateIndex(byMovieId, SchemaAction.ENABLE_INDEX);
         management.updateIndex(byCreditId, SchemaAction.ENABLE_INDEX);
 
-        System.out.println(management.printSchema());
-        System.out.println(management.printIndexes());
+        //System.out.println(management.printSchema());
+        //System.out.println(management.printIndexes());
 
         management.commit();
 
