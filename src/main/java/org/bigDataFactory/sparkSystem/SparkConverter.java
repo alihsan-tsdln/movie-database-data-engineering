@@ -67,6 +67,7 @@ public class SparkConverter {
                     v.property("profile_path", info.getString(3));
                 }
                 tx.commit();
+                tx.close();
                 client.closeConnection();
             } catch (Exception e) {
                 System.out.println(e.getLocalizedMessage());
@@ -80,21 +81,18 @@ public class SparkConverter {
         System.out.println(partitionNumber);
 
         movieDataset.repartition(partitionNumber).foreachPartition((ForeachPartitionFunction<Row>) iterator -> {
-            try {
-                System.out.println("Came Movie Partition");
-                JanusGraphClient client = new JanusGraphClient();
-                JanusGraphTransaction tx = client.getGraph().newTransaction();
+            System.out.println("Came Movie Partition");
+            JanusGraphClient client = new JanusGraphClient();
+            JanusGraphTransaction tx = client.getGraph().newTransaction();
 
-                while (iterator.hasNext()) {
-                    Row info = iterator.next();
-                    JanusGraphVertex v = tx.addVertex("movie");
-                    v.property("movie_id", info.getString(0));
-                }
-                tx.commit();
-                client.closeConnection();
-            } catch (Exception e) {
-                System.out.println(e.getLocalizedMessage());
+            while (iterator.hasNext()) {
+                Row info = iterator.next();
+                JanusGraphVertex v = tx.addVertex("movie");
+                v.property("movie_id", info.getString(0));
             }
+            tx.commit();
+            tx.close();
+            client.closeConnection();
         });
     }
 
@@ -124,9 +122,10 @@ public class SparkConverter {
                             }
                         }
                         tx.commit();
+                        tx.close();
                         client.closeConnection();
                     } catch (Exception e) {
-                        System.out.println(e.getLocalizedMessage());
+                        e.printStackTrace();
                     }
                 });
     }
@@ -138,8 +137,6 @@ public class SparkConverter {
         System.out.println(Runtime.getRuntime().freeMemory());
         int partitionNumber = (int) Math.ceil((double) SizeEstimator.estimate(crewEdges) / Runtime.getRuntime().freeMemory() * 5);
         System.out.println(partitionNumber);
-
-
 
         crewEdges.repartition(partitionNumber)
             .foreachPartition((ForeachPartitionFunction<Row>) iterator -> {
@@ -157,6 +154,7 @@ public class SparkConverter {
                                 info.getString(3), "job", info.getString(4));
                     }
                     tx.commit();
+                    tx.close();
                     client.closeConnection();
                 } catch (Exception e) {
                     System.out.println(e.getLocalizedMessage());
@@ -193,17 +191,18 @@ public class SparkConverter {
         Dataset<Row> dfCrew = createDataset(df, "crew", schemaCrew).distinct();
 
         new JanusGraphProducer().createSchema();
-
         loadMoviesToJanus(df);
+        JanusGraphClient client;
+        client = new JanusGraphClient();
 
-        loadVertexesToJanus(dfCast,"cast");
-        loadVertexesToJanus(dfCrew,"crew");
+        loadVertexesToJanus(dfCast, "cast");
+        loadVertexesToJanus(dfCrew, "crew");
 
         loadEdgesCastToJanus(dfCast);
         loadEdgesCrewToJanus(dfCrew);
 
 
-        JanusGraphClient client = new JanusGraphClient();
+        client = new JanusGraphClient();
         System.out.println("JANUS VERTEX COUNT");
         System.out.println(client.getG().V().count().next());
         System.out.println("JANUS EDGE COUNT");
