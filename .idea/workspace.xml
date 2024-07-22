@@ -6,8 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="342c41d1-17ff-41c8-a787-371e292fd690" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphProducer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphProducer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/sparkSystem/SparkConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/sparkSystem/SparkConverter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
