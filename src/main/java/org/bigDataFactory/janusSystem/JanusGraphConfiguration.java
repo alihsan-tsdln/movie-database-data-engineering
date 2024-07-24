@@ -23,7 +23,7 @@ public class JanusGraphConfiguration {
         build.set("cache.db-cache-size", 0.5);
         build.set("cluster.max-partitions",6);
         build.set("ids.authority.wait-time", 1000);
-        //build.set("query.force-index", true);
+        build.set("query.force-index", true);
         return build;
     }
 

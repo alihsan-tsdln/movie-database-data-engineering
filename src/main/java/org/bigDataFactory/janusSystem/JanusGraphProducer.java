@@ -2,10 +2,7 @@ package org.bigDataFactory.janusSystem;
 
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.janusgraph.core.EdgeLabel;
-import org.janusgraph.core.JanusGraphFactory;
-import org.janusgraph.core.PropertyKey;
-import org.janusgraph.core.VertexLabel;
+import org.janusgraph.core.*;
 import org.janusgraph.core.schema.Index;
 import org.janusgraph.core.schema.JanusGraphManagement;
 import org.janusgraph.core.schema.SchemaAction;
@@ -18,12 +15,16 @@ public class JanusGraphProducer {
         client = new JanusGraphClient();
         JanusGraphManagement management = client.getGraph().openManagement();
 
+        management.set("graph.set-vertex-id", true);
+        // optional, if you want to provide string ID
+        management.set("graph.allow-custom-vid-types", true);
+
         final VertexLabel crew = management.makeVertexLabel("crew").make();
         final VertexLabel cast = management.makeVertexLabel("cast").make();
         final VertexLabel movie = management.makeVertexLabel("movie").make();
 
-        final EdgeLabel acted = management.makeEdgeLabel("acted").unidirected().make();
-        final EdgeLabel worked = management.makeEdgeLabel("worked").unidirected().make();
+        final EdgeLabel acted = management.makeEdgeLabel("acted").make();
+        final EdgeLabel worked = management.makeEdgeLabel("worked").make();
 
 
         final PropertyKey cast_id = management.makePropertyKey("cast_id").dataType(Integer.class).make();
@@ -37,28 +38,32 @@ public class JanusGraphProducer {
         final PropertyKey movie_id = management.makePropertyKey("movie_id").dataType(String.class).make();
         final PropertyKey department = management.makePropertyKey("department").dataType(String.class).make();
         final PropertyKey job = management.makePropertyKey("job").dataType(String.class).make();
+        final PropertyKey vertex_type = management.makePropertyKey("vertex_type").dataType(String.class).make();
+        final PropertyKey edge_type = management.makePropertyKey("edge_type").dataType(String.class).make();
 
-        management.addProperties(cast, name, gender, id, profile_path);
-        management.addProperties(crew, name, gender, id, profile_path);
-        management.addProperties(acted, cast_id, character, credit_id, order);
-        management.addProperties(worked, credit_id, department, job);
-        management.addProperties(movie, movie_id);
+        management.addProperties(cast, name, gender, id, profile_path, vertex_type);
+        management.addProperties(crew, name, gender, id, profile_path, vertex_type);
+        management.addProperties(acted, cast_id, character, credit_id, order, edge_type);
+        management.addProperties(worked, credit_id, department, job, edge_type);
+        management.addProperties(movie, movie_id, vertex_type);
 
-        final Index byId = management.buildIndex("byId", Vertex.class).addKey(id).unique().buildCompositeIndex();
+        final Index byIdandLabel = management.buildIndex("byIdAndLabel", Vertex.class).addKey(vertex_type).addKey(id).unique().buildCompositeIndex();
         final Index byName = management.buildIndex("byName", Vertex.class).addKey(name).buildCompositeIndex();
         final Index byMovieId = management.buildIndex("byMovieId", Vertex.class).addKey(movie_id).unique().buildCompositeIndex();
-        final Index byCreditId = management.buildIndex("byCreditId", Edge.class).addKey(credit_id).buildCompositeIndex();
+        //final Index byCreditId = management.buildIndex("byCreditId", Edge.class).addKey(credit_id).buildCompositeIndex();
+        final Index byEdgeType = management.buildIndex("byEdgeType", Edge.class).addKey(edge_type).buildCompositeIndex();
+        final Index byVertexType = management.buildIndex("byVertexType", Vertex.class).addKey(vertex_type).buildCompositeIndex();
 
-        management.updateIndex(byId, SchemaAction.ENABLE_INDEX);
+        management.updateIndex(byIdandLabel, SchemaAction.ENABLE_INDEX);
         management.updateIndex(byName, SchemaAction.ENABLE_INDEX);
         management.updateIndex(byMovieId, SchemaAction.ENABLE_INDEX);
-        management.updateIndex(byCreditId, SchemaAction.ENABLE_INDEX);
+        management.updateIndex(byVertexType, SchemaAction.ENABLE_INDEX);
+        management.updateIndex(byEdgeType, SchemaAction.ENABLE_INDEX);
 
         //System.out.println(management.printSchema());
         //System.out.println(management.printIndexes());
 
         management.commit();
-
         client.closeConnection();
     }
 }
