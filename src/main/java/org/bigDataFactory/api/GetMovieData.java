@@ -28,26 +28,27 @@ public class GetMovieData {
 
     @GetMapping("/movieActors")
     public void getActor(@RequestParam String movie) {
-        JanusGraphConnector connector = new JanusGraphConnector();
-        JanusGraphClient client = connector.connectJanusGraph();
-        GraphTraversal<Vertex, Vertex> values = client.getG().V("movie_" + movie).out("acted");
+        GraphTraversal<Vertex, Vertex> values = getClient().getG().V("movie_" + movie).out("acted");
         while (values.hasNext())
             printValues(values.next());
     }
 
     @GetMapping("/movieCrew")
     public void getCrew(@RequestParam String movie) {
-        JanusGraphConnector connector = new JanusGraphConnector();
-        JanusGraphClient client = connector.connectJanusGraph();
-        GraphTraversal<Vertex, Vertex> values = client.getG().V("movie_" + movie).out("worked");
+        GraphTraversal<Vertex, Vertex> values = getClient().getG().V("movie_" + movie).out("worked");
+        while (values.hasNext())
+            printValues(values.next());
+    }
+
+    @GetMapping("/played")
+    public void getPlayed(@RequestParam String cast) {
+        GraphTraversal<Vertex, Vertex> values = getClient().getG().V("cast_" + cast).out();
         while (values.hasNext())
             printValues(values.next());
     }
 
     private void getDataFromJanusGraph(String id) {
-        JanusGraphConnector connector = new JanusGraphConnector();
-        JanusGraphClient client = connector.connectJanusGraph();
-        printValues(client.getG().V(id).next());
+        printValues(getClient().getG().V(id).next());
     }
 
     private void printValues(Vertex val) {
@@ -57,6 +58,10 @@ public class GetMovieData {
         System.out.println(keys);
         while (values.hasNext())
             System.out.println(values.next());
+    }
+
+    private JanusGraphClient getClient() {
+         return new JanusGraphConnector().connectJanusGraph();
     }
 
 }

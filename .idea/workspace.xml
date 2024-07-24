@@ -6,10 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="342c41d1-17ff-41c8-a787-371e292fd690" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/Application.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/GetMovieData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/GetMovieData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/sparkSystem/SparkConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/sparkSystem/SparkConverter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -150,7 +147,7 @@
       <workItem from="1721511954506" duration="1208000" />
       <workItem from="1721560952550" duration="6893000" />
       <workItem from="1721717063978" duration="42444000" />
-      <workItem from="1721827336461" duration="2669000" />
+      <workItem from="1721827336461" duration="3812000" />
     </task>
     <servers />
   </component>
