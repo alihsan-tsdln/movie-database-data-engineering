@@ -42,6 +42,7 @@ public class SparkConverter {
 
     public void closeSpark() {
         spark.stop();
+        spark.close();
     }
 
     private void loadVertexesToJanus(Dataset<Row> df, String labelName) {

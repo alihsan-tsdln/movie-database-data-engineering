@@ -5,13 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="342c41d1-17ff-41c8-a787-371e292fd690" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/JanusGraphConnector.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/Application.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/GetMovieData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/GetMovieData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphConfiguration.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphProducer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphProducer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/sparkSystem/SparkConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/sparkSystem/SparkConverter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -53,6 +50,7 @@
     "Application.Application.executor": "Run",
     "Application.GraphOfTheGodsFactory.executor": "Run",
     "Application.Main.executor": "Run",
+    "Docker.docker-compose.yaml.janusgraph: Compose Deployment.executor": "Run",
     "Maven.InterProbeStajDataSource [clean].executor": "Run",
     "Maven.InterProbeStajDataSource [compile].executor": "Run",
     "Maven.InterProbeStajDataSource [validate].executor": "Run",
@@ -82,7 +80,7 @@
       <recent name="C:\Users\alihsan-tsdln\Desktop\Coding\JAVA\InterProbeStajDataSource\src\main\resources" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.Application">
     <configuration name="Application" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="ALTERNATIVE_JRE_PATH" value="openjdk-21" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -104,9 +102,23 @@
       </deployment>
       <method v="2" />
     </configuration>
+    <configuration name="docker-compose.yaml.janusgraph: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="services">
+            <list>
+              <option value="janusgraph" />
+            </list>
+          </option>
+          <option name="sourceFilePath" value="docker-compose.yaml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Application.Application" />
+        <item itemvalue="Docker.docker-compose.yaml.janusgraph: Compose Deployment" />
       </list>
     </recent_temporary>
   </component>
@@ -137,7 +149,8 @@
       <workItem from="1721401801531" duration="816000" />
       <workItem from="1721511954506" duration="1208000" />
       <workItem from="1721560952550" duration="6893000" />
-      <workItem from="1721717063978" duration="37548000" />
+      <workItem from="1721717063978" duration="42444000" />
+      <workItem from="1721827336461" duration="2669000" />
     </task>
     <servers />
   </component>
