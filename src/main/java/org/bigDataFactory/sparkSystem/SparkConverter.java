@@ -218,7 +218,7 @@ public class SparkConverter {
     }
 
 
-    private Row createRowfromFactory(@NotNull JSONObject object, String id) {
+    private Row createRowFromFactory(@NotNull JSONObject object, String id) {
         Iterator<String> it = object.keys();
         List<Object> valueOfRow = new ArrayList<>();
         while (it.hasNext())
@@ -237,7 +237,7 @@ public class SparkConverter {
             String movie_id = movie_ids.get(movieIdx).getString(0);
             JSONArray jsonArray = new JSONArray(cast.getString(0));
             for (int i = 0; i < jsonArray.length(); i++)
-                moviesDataList.add(createRowfromFactory(jsonArray.getJSONObject(i), movie_id));
+                moviesDataList.add(createRowFromFactory(jsonArray.getJSONObject(i), movie_id));
             movieIdx++;
         }
         return spark.createDataFrame(moviesDataList, schema);

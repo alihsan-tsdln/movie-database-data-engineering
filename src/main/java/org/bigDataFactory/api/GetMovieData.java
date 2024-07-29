@@ -1,15 +1,19 @@
 package org.bigDataFactory.api;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.bigDataFactory.janusSystem.JanusGraphClient;
+import org.bigDataFactory.api.entities.MovieEntity;
+import org.bigDataFactory.api.entities.PersonEntity;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Iterator;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class GetMovieData {
@@ -17,50 +21,79 @@ public class GetMovieData {
     @Autowired
     JanusGraphConnector connector;
 
-    @GetMapping("/movie")
-    public void searchMovie(@RequestParam String movie) { getDataFromJanusGraph("movie_" + movie); }
+    @ResponseBody
+    @GetMapping(value = "/movie")
+    public MovieEntity searchMovie(@RequestParam String id) {
+        return new MovieEntity(getDataFromJanusGraph("movie_" + id));
+    }
 
-    @GetMapping("/cast")
-    public void searchCast(@RequestParam String cast) { getDataFromJanusGraph("cast_" + cast); }
+    @ResponseBody
+    @GetMapping(value = "/cast", params = {"id"})
+    public PersonEntity searchCast(@RequestParam String id) {
+        return new PersonEntity(getDataFromJanusGraph("cast_" + id));
+    }
 
-    @GetMapping("/crew")
-    public void searchCrew(@RequestParam String crew) { getDataFromJanusGraph("crew_" + crew); }
+    @ResponseBody
+    @GetMapping(value = "/cast", params = {"name"})
+    public PersonEntity searchCastName(@RequestParam String name) {
+        return new PersonEntity(getG().V().has("name",name).next());
+    }
 
-    @GetMapping("/movieActors")
-    public void getActor(@RequestParam String movie) {
-        GraphTraversal<Vertex, Vertex> values = getClient().getG().V("movie_" + movie).out("acted");
+    @ResponseBody
+    @GetMapping(value = "/crew", params = {"id"})
+    public PersonEntity searchCrew(@RequestParam String id) {
+        return new PersonEntity(getDataFromJanusGraph("crew_" + id));
+    }
+
+    @ResponseBody
+    @GetMapping(value = "/crew", params = {"name"})
+    public PersonEntity searchCrewName(@RequestParam String name) {
+        return new PersonEntity(getG().V().has("name",name).next());
+    }
+
+    @ResponseBody
+    @GetMapping(value = "/movieActors")
+    public List<PersonEntity> getActor(@RequestParam String id) {
+        return returnPersonResponseBody(getG().V("movie_" + id).out("acted"));
+    }
+
+    @ResponseBody
+    @GetMapping(value = "/movieCrew")
+    public List<PersonEntity> getCrew(@RequestParam String id) {
+        return returnPersonResponseBody(getG().V("movie_" + id).out("worked"));
+    }
+
+    @ResponseBody
+    @GetMapping(value = "/played")
+    public List<MovieEntity> getPlayed(@RequestParam String id) {
+        return returnMovieResponseBody(getG().V("cast_" + id).out());
+    }
+
+    @ResponseBody
+    @GetMapping(value = "/worked")
+    public List<MovieEntity> getWorked(@RequestParam String id) {
+        return returnMovieResponseBody(getG().V("crew_" + id).out());
+    }
+
+    private @NotNull List<PersonEntity> returnPersonResponseBody(@NotNull GraphTraversal<Vertex, Vertex> values) {
+        ArrayList<PersonEntity> personEntities = new ArrayList<>();
         while (values.hasNext())
-            printValues(values.next());
+            personEntities.add(new PersonEntity(values.next()));
+        return personEntities;
     }
 
-    @GetMapping("/movieCrew")
-    public void getCrew(@RequestParam String movie) {
-        GraphTraversal<Vertex, Vertex> values = getClient().getG().V("movie_" + movie).out("worked");
+    private @NotNull List<MovieEntity> returnMovieResponseBody(@NotNull GraphTraversal<Vertex, Vertex> values) {
+        ArrayList<MovieEntity> movieEntities = new ArrayList<>();
         while (values.hasNext())
-            printValues(values.next());
+            movieEntities.add(new MovieEntity(values.next()));
+        return movieEntities;
     }
 
-    @GetMapping("/played")
-    public void getPlayed(@RequestParam String cast) {
-        GraphTraversal<Vertex, Vertex> values = getClient().getG().V("cast_" + cast).out();
-        while (values.hasNext())
-            printValues(values.next());
+    private Vertex getDataFromJanusGraph(String id) {
+        return getG().V(id).next();
     }
 
-    private void getDataFromJanusGraph(String id) {
-        printValues(getClient().getG().V(id).next());
-    }
-
-    private void printValues(Vertex val) {
-        Iterator<Object> values = val.values();
-        Set<String> keys = val.keys();
-        System.out.println();
-        System.out.println(keys);
-        while (values.hasNext())
-            System.out.println(values.next());
-    }
-
-    private JanusGraphClient getClient() {
+    private GraphTraversalSource getG() {
          return new JanusGraphConnector().connectJanusGraph();
     }
 
