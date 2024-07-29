@@ -16,26 +16,26 @@ services:
   janusgraph:
     image: docker.io/janusgraph/janusgraph:latest
     container_name: jce-janusgraph
+    ports:
+      - "8182:8182"
     environment:
       JANUS_PROPS_TEMPLATE: cql
       #cql-es
       janusgraph.storage.hostname: jce-cassandra
       #janusgraph.index.search.hostname: jce-elastic
-    ports:
-      - "8182:8182"
     networks:
       - jce-network
 
   cassandra:
     image: cassandra:3
     container_name: jce-cassandra
-    #depends_on:
-    #  - janusgraph
     ports:
       - "9042:9042"
       - "9160:9160"
+    depends_on:
+      - janusgraph
     environment:
-      CASSANDRA_START_RPC : true
+      CASSANDRA_START_RPC : "true"
     networks:
       - jce-network
 
@@ -55,7 +55,17 @@ services:
     #networks:
     #  - jce-network
 
+  gremlin-visualizer:
+    image: prabushitha/gremlin-visualizer:latest
+    container_name: gremlin_visualize
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    networks:
+      - jce-network
+
 networks:
   jce-network:
+
 volumes:
   janusgraph-default-data:

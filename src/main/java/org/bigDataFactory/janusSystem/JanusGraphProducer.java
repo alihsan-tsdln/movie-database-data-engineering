@@ -2,7 +2,10 @@ package org.bigDataFactory.janusSystem;
 
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.janusgraph.core.*;
+import org.janusgraph.core.EdgeLabel;
+import org.janusgraph.core.JanusGraphFactory;
+import org.janusgraph.core.PropertyKey;
+import org.janusgraph.core.VertexLabel;
 import org.janusgraph.core.schema.Index;
 import org.janusgraph.core.schema.JanusGraphManagement;
 import org.janusgraph.core.schema.SchemaAction;

@@ -80,6 +80,7 @@ public class SparkConverter {
 
     private void loadMoviesToJanus(Dataset<Row> df) {
         Dataset<Row> movieDataset = df.select("id").distinct();
+        System.gc();
         int partitionNumber = (int) Math.ceil((double) SizeEstimator.estimate(df) / Runtime.getRuntime().freeMemory() * 5);
         System.out.println(partitionNumber);
 
@@ -104,6 +105,7 @@ public class SparkConverter {
         System.out.println("CAST PARTITION COUNT");
         System.out.println(SizeEstimator.estimate(castEdges));
         System.out.println(Runtime.getRuntime().freeMemory());
+        System.gc();
         int partitionNumber = (int) Math.ceil((double) SizeEstimator.estimate(castEdges) / Runtime.getRuntime().freeMemory() * 5);
 
         System.out.println(partitionNumber);
@@ -142,6 +144,7 @@ public class SparkConverter {
         System.out.println("CREW PARTITION COUNT");
         System.out.println(SizeEstimator.estimate(crewEdges));
         System.out.println(Runtime.getRuntime().freeMemory());
+        System.gc();
         int partitionNumber = (int) Math.ceil((double) SizeEstimator.estimate(crewEdges) / Runtime.getRuntime().freeMemory() * 5);
         System.out.println(partitionNumber);
 
