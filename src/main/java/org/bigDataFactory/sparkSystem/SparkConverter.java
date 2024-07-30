@@ -45,8 +45,8 @@ public class SparkConverter {
         spark.close();
     }
 
-    private void loadVertexesToJanus(Dataset<Row> df, String labelName) {
-        df = df.select("id","name","gender","profile_path").dropDuplicates("id");
+    private void loadVertexesToJanus(Dataset<Row> df) {
+        df = df.dropDuplicates("id");
         System.out.println("VERTEX PARTITION COUNT");
         System.out.println((int) SizeEstimator.estimate(df));
         System.out.println(Runtime.getRuntime().freeMemory());
@@ -61,13 +61,13 @@ public class SparkConverter {
                 JanusGraphTransaction tx = client.getGraph().buildTransaction().enableBatchLoading().consistencyChecks(false).start();
                 while (iterator.hasNext()) {
                     Row info = iterator.next();
-                    tx.addVertex(T.label, labelName,
-                            T.id, labelName + "_" + info.getInt(0),
+                    tx.addVertex(T.label, "person",
+                            T.id, "person_" + info.getInt(0),
                             "id", info.getInt(0),
                             "name", info.getString(1),
                             "gender", info.getInt(2),
                             "profile_path", info.getString(3),
-                            "vertex_type", labelName);
+                            "vertex_type", "person");
                 }
                 tx.commit();
                 tx.close();
@@ -119,7 +119,7 @@ public class SparkConverter {
                     JanusGraph graph = client.getGraph();
                     while (iterator.hasNext()) {
                         Row info = iterator.next();
-                        Vertex v = g.V("cast_" + info.getInt(0)).next();
+                        Vertex v = g.V("person_" + info.getInt(0)).next();
                         Vertex movie = g.V("movie_" + info.getString(1)).next();
                         v.addEdge("acted", movie,
                                 "cast_id", info.getInt(2), "character", info.getString(3),
@@ -158,7 +158,7 @@ public class SparkConverter {
 
                     while (iterator.hasNext()) {
                         Row info = iterator.next();
-                        Vertex v = g.V("crew_" + info.getInt(0)).next();
+                        Vertex v = g.V("person_" + info.getInt(0)).next();
                         Vertex movie = g.V("movie_"+info.getString(1)).next();
                         v.addEdge("worked", movie,
                                 "credit_id", info.getString(2), "department", info.getString(3),
@@ -210,8 +210,7 @@ public class SparkConverter {
         new JanusGraphProducer().createSchema();
         loadMoviesToJanus(df);
 
-        loadVertexesToJanus(dfCast, "cast");
-        loadVertexesToJanus(dfCrew, "crew");
+        loadVertexesToJanus(dfCast.select("id","name","gender","profile_path").union(dfCrew.select("id","name","gender","profile_path")));
 
         loadEdgesCastToJanus(dfCast);
         loadEdgesCrewToJanus(dfCrew);

@@ -1,20 +1,21 @@
 package org.bigDataFactory.api.entities;
 
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
-public class CastEdgeEntity {
+public class CastEdgeEntity extends PersonEntity{
     private int cast_id;
     private String character;
     private String credit_id;
     private int order;
-    private String movie_id;
 
-    public CastEdgeEntity(Vertex v) {
-        this.cast_id = v.value("cast_id");
-        this.character = v.value("character");
-        this.credit_id = v.value("credit_id");
-        this.order = v.value("order");
-        this.movie_id = v.value("movie_id");
+
+    public CastEdgeEntity(Vertex v, Edge e) {
+        super(v);
+        this.cast_id = e.value("cast_id");
+        this.character = e.value("character");
+        this.credit_id = e.value("credit_id");
+        this.order = e.value("order");
     }
 
     public int getCast_id() {
@@ -47,13 +48,5 @@ public class CastEdgeEntity {
 
     public void setOrder(int order) {
         this.order = order;
-    }
-
-    public String getMovie_id() {
-        return movie_id;
-    }
-
-    public void setMovie_id(String movie_id) {
-        this.movie_id = movie_id;
     }
 }

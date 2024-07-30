@@ -35,7 +35,7 @@ const DataTableContainer = ({ request, onError }) => {
                 setData([fetchedData]);
                 setColumns(dynamicColumns);
             }
-            setError(null); // Clear previous errors
+            setError(null);
         } catch (error) {
             if (error.response && error.response.status === 500) {
                 setError("Server error. Please check your input and try again.");
@@ -44,7 +44,7 @@ const DataTableContainer = ({ request, onError }) => {
             } else {
                 setError("An unexpected error occurred. Please try again.");
             }
-            onError(error.message); // Pass the error message to parent component
+            onError(error.message); 
         } finally {
             setLoading(false);
         }
@@ -72,12 +72,11 @@ const DataTableContainer = ({ request, onError }) => {
 const DropDownSelector = ({ onSelect }) => {
     const options = [
         { label: 'Get Movie TMDB ID', value: 0 },
-        { label: 'Get Cast Info', value: 1 },
-        { label: 'Get Crew Info', value: 2 },
-        { label: 'Whose played on the movie?', value: 3 },
-        { label: 'Whose worked on the movie?', value: 4 },
-        { label: 'What movies the actor played in?', value: 5 },
-        { label: 'What movies the set worker worked in?', value: 6 },
+        { label: 'Get Person Info', value: 1 },
+        { label: 'Whose played on the movie?', value: 2 },
+        { label: 'Whose worked on the movie?', value: 3 },
+        { label: 'What movies the actor played in?', value: 4 },
+        { label: 'What movies the set worker worked in?', value: 5 },
     ];
 
     return (
@@ -116,25 +115,26 @@ function App() {
         }
 
         let url = '';
-        if (question === 1 || question === 2) {
-            // For Cast or Crew Info, use both id and name if provided
+        if (question === 1 || question === 4 || question === 5) {
             if (!id && !name) {
-                setError("Please provide either ID or Name for Cast or Crew Info.");
+                setError("Please provide either ID or Name for Cast and Crew Info.");
                 return;
             }
-            url = `http://localhost:8080/${question === 1 ? 'cast' : 'crew'}?` +
-                  `${id ? `id=${id}&` : ''}${name ? `name=${name}` : ''}`;
+            else if (id && name) {
+                setError("Please choose one either ID or Name.")
+            }
+            url = `http://localhost:8080/${["movie", "person", "movieActors", "movieCrew", "played", "worked"][question]}?id=${id}`;
         } else {
             // Other options
             if (!id) {
                 setError("Please provide an ID.");
                 return;
             }
-            url = `http://localhost:8080/${["movie", "cast", "crew", "movieActors", "movieCrew", "played", "worked"][question]}?id=${id}`;
+            url = `http://localhost:8080/${["movie", "person", "movieActors", "movieCrew", "played", "worked"][question]}?id=${id}`;
         }
 
         setRequest(url);
-        setError(''); // Clear previous error
+        setError('');
     }
 
     return (
@@ -152,6 +152,7 @@ function App() {
                     value={name}
                     onChange={handleNameChange}
                     placeholder="Enter Name"
+                    disabled={[0,2,3].includes(question)}
                 />
                 <DropDownSelector onSelect={handleSelection} />
                 <button onClick={sendRequest}>Send Request</button>

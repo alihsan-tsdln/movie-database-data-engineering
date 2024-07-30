@@ -1,18 +1,18 @@
 package org.bigDataFactory.api.entities;
 
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
-public class CrewEdgeEntity {
+public class CrewEdgeEntity extends PersonEntity{
     private String credit_id;
     private String department;
     private String job;
-    private String movie_id;
 
-    public CrewEdgeEntity(Vertex v) {
-        this.department = v.value("department");
-        this.job = v.value("job");
-        this.credit_id = v.value("credit_id");
-        this.movie_id = v.value("movie_id");
+    public CrewEdgeEntity(Vertex v, Edge e) {
+        super(v);
+        this.department = e.value("department");
+        this.job = e.value("job");
+        this.credit_id = e.value("credit_id");
     }
 
     public String getCredit_id() {
@@ -37,13 +37,5 @@ public class CrewEdgeEntity {
 
     public void setJob(String job) {
         this.job = job;
-    }
-
-    public String getMovie_id() {
-        return movie_id;
-    }
-
-    public void setMovie_id(String movie_id) {
-        this.movie_id = movie_id;
     }
 }
