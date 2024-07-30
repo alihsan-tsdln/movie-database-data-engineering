@@ -76,6 +76,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.janusgraph</groupId>
+            <artifactId>janusgraph-es</artifactId>
+            <version>1.1.0-20240712-100602.aaf21b1</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20240303</version>

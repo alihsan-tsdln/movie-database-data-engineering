@@ -52,7 +52,7 @@ public class SparkConverter {
         df.repartition(partitionNumber).foreachPartition((ForeachPartitionFunction<Row>) iterator -> JanusGraphConsumer.getInstance().loadVertexesToJanus(iterator));
     }
 
-    private void loadMoviesToJanus(Dataset<Row> df) {
+    private void loadMoviesToJanus(@NotNull Dataset<Row> df) {
         Dataset<Row> movieDataset = df.select("id").distinct();
         System.gc();
         int partitionNumber = (int) Math.ceil((double) SizeEstimator.estimate(df) / Runtime.getRuntime().freeMemory() * 5);
@@ -61,7 +61,7 @@ public class SparkConverter {
         movieDataset.repartition(partitionNumber).foreachPartition((ForeachPartitionFunction<Row>) iterator -> JanusGraphConsumer.getInstance().loadMoviesToJanus(iterator));
     }
 
-    private void loadEdgesCastToJanus(Dataset<Row> dfCast) {
+    private void loadEdgesCastToJanus(@NotNull Dataset<Row> dfCast) {
         Dataset<Row> castEdges = dfCast.select( "id","movie_id","cast_id", "character", "credit_id", "order");
         System.out.println("CAST PARTITION COUNT");
         System.out.println(SizeEstimator.estimate(castEdges));
@@ -75,7 +75,7 @@ public class SparkConverter {
             .foreachPartition((ForeachPartitionFunction<Row>) iterator -> JanusGraphConsumer.getInstance().loadEdgesCastToJanus(iterator));
     }
 
-    private void loadEdgesCrewToJanus(Dataset<Row> dfCrew) {
+    private void loadEdgesCrewToJanus(@NotNull Dataset<Row> dfCrew) {
         Dataset<Row> crewEdges = dfCrew.select("id","movie_id","credit_id", "department", "job");
         System.out.println("CREW PARTITION COUNT");
         System.out.println(SizeEstimator.estimate(crewEdges));
@@ -126,7 +126,7 @@ public class SparkConverter {
     }
 
 
-    private Row createRowFromFactory(@NotNull JSONObject object, String id) {
+    private @NotNull Row createRowFromFactory(@NotNull JSONObject object, String id) {
         Iterator<String> it = object.keys();
         List<Object> valueOfRow = new ArrayList<>();
         while (it.hasNext())
@@ -136,7 +136,7 @@ public class SparkConverter {
     }
 
 
-    private Dataset<Row> createDataset(Dataset<Row> df, String columnName, StructType schema) {
+    private Dataset<Row> createDataset(@NotNull Dataset<Row> df, String columnName, StructType schema) {
         int movieIdx = 0;
         List<Row> listOfData = df.select(columnName).collectAsList();
         List<Row> movie_ids = df.select("id").collectAsList();

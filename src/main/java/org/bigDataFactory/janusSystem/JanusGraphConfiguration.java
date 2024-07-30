@@ -3,57 +3,65 @@ package org.bigDataFactory.janusSystem;
 import org.janusgraph.core.JanusGraphFactory;
 
 public class JanusGraphConfiguration {
-    private JanusGraphFactory.Builder build = null;
+    private static JanusGraphConfiguration config = null;
 
-    public JanusGraphFactory.Builder config(String backend, String hostname, String port) {
+    private JanusGraphConfiguration() {
 
-        build = JanusGraphFactory.build();
-        build.set("storage.backend", backend);
-        build.set("storage.hostname", hostname);
-        build.set("storage.port", port);
-        build.set("storage.cql.read-consistency-level","LOCAL_ONE");
-        build.set("storage.cql.replication-factor",1);
-        build.set("storage.cql.write-consistency-level","LOCAL_ONE");
-        build.set("storage.buffer-size", 2048);
-        build.set("storage.batch-loading", true);
-        build.set("query.batch",true);
-        build.set("cache.db-cache", true);
-        build.set("cache.db-cache-clean-wait", 20);
-        build.set("cache.db-cache-time", 500000);
-        build.set("cache.db-cache-size", 0.5);
-        build.set("cluster.max-partitions",6);
-        build.set("ids.authority.wait-time", 1000);
-        build.set("query.force-index", true);
-        return build;
     }
 
-    public JanusGraphFactory.Builder config(String backend, String hostname, String port, String schemaDefault, boolean schemaConstraints) {
-        build = JanusGraphFactory.build();
-        build.set("storage.backend", backend);
-        build.set("storage.hostname", hostname);
-        build.set("storage.port", port);
-        build.set("schema.default",schemaDefault);
-        build.set("schema.constraints",schemaConstraints);
+    public static JanusGraphConfiguration getInstance() {
+        if(config == null) {
+            System.out.println("CONFIGURED");
+            config = new JanusGraphConfiguration();
+        }
+        return config;
+    }
 
-        return build;
+    public JanusGraphFactory.Builder config(String backend, String hostname, String port) {
+        return JanusGraphFactory.build()
+            .set("storage.backend", backend)
+            .set("storage.hostname", hostname)
+            .set("storage.port", port)
+            .set("storage.cql.read-consistency-level","LOCAL_ONE")
+            .set("storage.cql.replication-factor",1)
+            .set("storage.cql.write-consistency-level","LOCAL_ONE")
+            .set("storage.buffer-size", 2048)
+            .set("storage.batch-loading", true)
+            .set("query.batch",true)
+            .set("cache.db-cache", true)
+            .set("cache.db-cache-clean-wait", 20)
+            .set("cache.db-cache-time", 500000)
+            .set("cache.db-cache-size", 0.5)
+            .set("cluster.max-partitions",6)
+            .set("ids.authority.wait-time", 1000)
+            .set("query.force-index", true);
     }
 
     public JanusGraphFactory.Builder config() {
-        build = JanusGraphFactory.build();
-        return build;
+        return JanusGraphFactory.build();
     }
 
-    public JanusGraphFactory.Builder config(String backend, String indexer, String hostname, String port) {
-        JanusGraphFactory.Builder build = JanusGraphFactory.build();
-        build.set("storage.backend", backend);
-        build.set("storage.hostname", hostname);
-        build.set("storage.port", port);
-        build.set("index.search.backend", indexer);
-        build.set("index.search.hostname", hostname);
-        build.set("index.search.elasticsearch.client-only", "true");
-
-        return build;
+    public JanusGraphFactory.Builder config(String backStorage, String indexer, String hostnameCQL, String portCQL, String hostnameES, String portES) {
+        return JanusGraphFactory.build()
+            .set("storage.backend", backStorage)
+            .set("storage.hostname", hostnameCQL)
+            .set("storage.port", portCQL)
+            .set("storage.cql.read-consistency-level","LOCAL_ONE")
+            .set("storage.cql.replication-factor",1)
+            .set("storage.cql.write-consistency-level","LOCAL_ONE")
+            .set("storage.buffer-size", 2048)
+            .set("storage.batch-loading", true)
+            .set("query.batch",true)
+            .set("cache.db-cache", true)
+            .set("cache.db-cache-clean-wait", 20)
+            .set("cache.db-cache-time", 500000)
+            .set("cache.db-cache-size", 0.5)
+            .set("cluster.max-partitions",6)
+            .set("ids.authority.wait-time", 1000)
+            .set("query.force-index", true)
+            .set("index.search.backend", indexer)
+            .set("index.search.hostname", hostnameES)
+            .set("index.search.port", portES)
+            .set("index.search.elasticsearch.client-only", true);
     }
-
-
 }

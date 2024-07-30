@@ -8,6 +8,7 @@ import org.janusgraph.core.PropertyKey;
 import org.janusgraph.core.VertexLabel;
 import org.janusgraph.core.schema.Index;
 import org.janusgraph.core.schema.JanusGraphManagement;
+import org.janusgraph.core.schema.Mapping;
 import org.janusgraph.core.schema.SchemaAction;
 
 public class JanusGraphProducer {
@@ -61,7 +62,7 @@ public class JanusGraphProducer {
         management.addProperties(movie, movie_id, vertex_type);
 
         final Index byIdAndLabel = management.buildIndex("byIdAndLabel", Vertex.class).addKey(vertex_type).addKey(id).unique().buildCompositeIndex();
-        final Index byName = management.buildIndex("byName", Vertex.class).addKey(name).buildCompositeIndex();
+        final Index byName = management.buildIndex("byName", Vertex.class).addKey(name, Mapping.TEXT.asParameter()).buildMixedIndex("search");
         final Index byMovieId = management.buildIndex("byMovieId", Vertex.class).addKey(movie_id).unique().buildCompositeIndex();
         final Index byEdgeType = management.buildIndex("byEdgeType", Edge.class).addKey(edge_type).buildCompositeIndex();
         final Index byVertexType = management.buildIndex("byVertexType", Vertex.class).addKey(vertex_type).buildCompositeIndex();

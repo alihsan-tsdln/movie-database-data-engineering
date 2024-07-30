@@ -8,7 +8,8 @@ public class JanusGraphClient {
     private final JanusGraph graph;
 
     public JanusGraphClient() {
-        graph = new JanusGraphConfiguration().config("cql","0.0.0.0","9042").open();
+        graph = JanusGraphConfiguration.getInstance().config("cql", "elasticsearch", "0.0.0.0",
+                "9042", "0.0.0.0", "9200").open();
         System.out.println("opened client");
         g = graph.traversal();
     }

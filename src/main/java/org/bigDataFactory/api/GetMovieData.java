@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.janusgraph.core.attribute.Text.textContainsFuzzy;
+import static org.janusgraph.core.attribute.Text.textContainsRegex;
+
 @RestController
 public class GetMovieData {
 
@@ -38,8 +41,8 @@ public class GetMovieData {
 
     @ResponseBody
     @GetMapping(value = "/person", params = {"name"})
-    public PersonEntity searchCastName(@RequestParam String name) {
-        return new PersonEntity(getG().V().has("name",name).next());
+    public List<PersonEntity> searchCastName(@RequestParam String name) {
+        return returnPersonResponseBody(getG().V().has("name", textContainsFuzzy(name)).or().has("name", textContainsRegex(".*" + name + ".*")));
     }
 
     @ResponseBody
@@ -63,7 +66,7 @@ public class GetMovieData {
     @ResponseBody
     @GetMapping(value = "/played", params = {"name"})
     public List<MovieEntity> getPlayedName(@RequestParam String name) {
-        return returnMovieResponseBody(getG().V().has("name",name).out("acted"));
+        return returnMovieResponseBody(getG().V().has("name", textContainsFuzzy(name)).or().has("name", textContainsRegex(".*" + name + ".*")).out("acted"));
     }
 
     @ResponseBody
@@ -75,7 +78,7 @@ public class GetMovieData {
     @ResponseBody
     @GetMapping(value = "/worked", params = {"name"})
     public List<MovieEntity> getWorkedName(@RequestParam String name) {
-        return returnMovieResponseBody(getG().V().has("name", name).out("worked"));
+        return returnMovieResponseBody(getG().V().has("name", textContainsFuzzy(name)).or().has("name", textContainsRegex(".*" + name + ".*")).out("worked"));
     }
 
     private @NotNull List<CastEdgeEntity> returnCastResponseBody(@NotNull GraphTraversal<Vertex, Vertex> values, @NotNull GraphTraversal<Vertex, Edge> edges) {
@@ -97,6 +100,12 @@ public class GetMovieData {
         while (values.hasNext())
             movieEntities.add(new MovieEntity(values.next()));
         return movieEntities;
+    }
+    private @NotNull List<PersonEntity> returnPersonResponseBody(@NotNull GraphTraversal<Vertex, Vertex> values) {
+        ArrayList<PersonEntity> personEntities = new ArrayList<>();
+        while (values.hasNext())
+            personEntities.add(new PersonEntity(values.next()));
+        return personEntities;
     }
 
     private Vertex getDataFromJanusGraph(String id) {

@@ -123,7 +123,7 @@ function App() {
             else if (id && name) {
                 setError("Please choose one either ID or Name.")
             }
-            url = `http://localhost:8080/${["movie", "person", "movieActors", "movieCrew", "played", "worked"][question]}?id=${id}`;
+            url = `http://localhost:8080/${["movie", "person", "movieActors", "movieCrew", "played", "worked"][question]}${id ? `?id=${id}` : name ? `?name=${name}` : ''}`;
         } else {
             // Other options
             if (!id) {
