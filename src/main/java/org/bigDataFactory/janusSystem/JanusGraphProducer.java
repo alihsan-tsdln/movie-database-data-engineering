@@ -12,6 +12,19 @@ import org.janusgraph.core.schema.SchemaAction;
 
 public class JanusGraphProducer {
 
+    private static JanusGraphProducer producer = null;
+
+    private JanusGraphProducer() {
+
+    }
+
+    public static JanusGraphProducer getInstance() {
+        if(producer == null) {
+            producer = new JanusGraphProducer();
+        }
+        return producer;
+    }
+
     public void createSchema() throws Exception {
         JanusGraphClient  client = new JanusGraphClient();
         JanusGraphFactory.drop(client.getGraph());
@@ -19,7 +32,6 @@ public class JanusGraphProducer {
         JanusGraphManagement management = client.getGraph().openManagement();
 
         management.set("graph.set-vertex-id", true);
-        // optional, if you want to provide string ID
         management.set("graph.allow-custom-vid-types", true);
 
         final VertexLabel person = management.makeVertexLabel("person").make();
@@ -48,20 +60,17 @@ public class JanusGraphProducer {
         management.addProperties(worked, credit_id, department, job, edge_type);
         management.addProperties(movie, movie_id, vertex_type);
 
-        final Index byIdandLabel = management.buildIndex("byIdAndLabel", Vertex.class).addKey(vertex_type).addKey(id).unique().buildCompositeIndex();
+        final Index byIdAndLabel = management.buildIndex("byIdAndLabel", Vertex.class).addKey(vertex_type).addKey(id).unique().buildCompositeIndex();
         final Index byName = management.buildIndex("byName", Vertex.class).addKey(name).buildCompositeIndex();
         final Index byMovieId = management.buildIndex("byMovieId", Vertex.class).addKey(movie_id).unique().buildCompositeIndex();
         final Index byEdgeType = management.buildIndex("byEdgeType", Edge.class).addKey(edge_type).buildCompositeIndex();
         final Index byVertexType = management.buildIndex("byVertexType", Vertex.class).addKey(vertex_type).buildCompositeIndex();
 
-        management.updateIndex(byIdandLabel, SchemaAction.ENABLE_INDEX);
+        management.updateIndex(byIdAndLabel, SchemaAction.ENABLE_INDEX);
         management.updateIndex(byName, SchemaAction.ENABLE_INDEX);
         management.updateIndex(byMovieId, SchemaAction.ENABLE_INDEX);
         management.updateIndex(byVertexType, SchemaAction.ENABLE_INDEX);
         management.updateIndex(byEdgeType, SchemaAction.ENABLE_INDEX);
-
-        //System.out.println(management.printSchema());
-        //System.out.println(management.printIndexes());
 
         management.commit();
         client.closeConnection();

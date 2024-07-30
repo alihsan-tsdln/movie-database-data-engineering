@@ -5,14 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="342c41d1-17ff-41c8-a787-371e292fd690" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movie-app/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/movie-app/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/Application.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/Application.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/GetMovieData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/GetMovieData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/JanusGraphConnector.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/JanusGraphConnector.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/entities/CastEdgeEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/entities/CastEdgeEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/entities/CrewEdgeEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/entities/CrewEdgeEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphConsumer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphProducer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphProducer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphSchemaCreator.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/sparkSystem/SparkConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/sparkSystem/SparkConverter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
