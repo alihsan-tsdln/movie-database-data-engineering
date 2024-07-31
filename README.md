@@ -88,7 +88,7 @@ bin/gremlin.sh
 ```
 We've started Gremlin Server by gremlin.sh.
 
-Finally, we are able to use website. The link is [http:/localhost:3000](http:/localhost:3000).
+Finally, we are able to use website. The link is [http:/localhost:3002](http:/localhost:3002).
 Host part would be your JanusGraph's host. Port is 8182 default port of Gremlin.
 
 

@@ -53,12 +53,12 @@ public class SparkConverter {
     }
 
     private void loadMoviesToJanus(@NotNull Dataset<Row> df) {
-        Dataset<Row> movieDataset = df.select("id").distinct();
+        df = df.select("id").distinct();
         System.gc();
         int partitionNumber = (int) Math.ceil((double) SizeEstimator.estimate(df) / Runtime.getRuntime().freeMemory() * 5);
         System.out.println(partitionNumber);
 
-        movieDataset.repartition(partitionNumber).foreachPartition((ForeachPartitionFunction<Row>) iterator -> JanusGraphConsumer.getInstance().loadMoviesToJanus(iterator));
+        df.repartition(partitionNumber).foreachPartition((ForeachPartitionFunction<Row>) iterator -> JanusGraphConsumer.getInstance().loadMoviesToJanus(iterator));
     }
 
     private void loadEdgesCastToJanus(@NotNull Dataset<Row> dfCast) {
@@ -91,6 +91,8 @@ public class SparkConverter {
     public void fetchDataCsv() throws Exception {
         Dataset<Row> df = spark.read().option("header", true).csv("src/main/resources/Movies/credits.csv");
 
+        df.limit(5).show();
+
         StructType schemaCast = new StructType()
                 .add("cast_id", DataTypes.IntegerType, false)
                 .add("character", DataTypes.StringType, true)
@@ -115,6 +117,9 @@ public class SparkConverter {
 
         Dataset<Row> dfCast = createDataset(df, "cast", schemaCast).distinct();
         Dataset<Row> dfCrew = createDataset(df, "crew", schemaCrew).distinct();
+
+        dfCast.limit(5).show();
+        dfCrew.limit(5).show();
 
         JanusGraphProducer.getInstance().createSchema();
         loadMoviesToJanus(df);
