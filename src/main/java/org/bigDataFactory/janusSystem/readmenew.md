@@ -1,4 +1,4 @@
-#Connect JanusGraph
+# Connect JanusGraph
 JanusGraphClient is main class for using JanusGraph features. We would like to leverage embedded JanusGraph server at every process. Because we don't need continous work for it. Data store in Apache Cassandra. Thus, we must keep only Cassandra server online.
 
 ```java
