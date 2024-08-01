@@ -62,7 +62,7 @@ public PersonEntity searchCast(@RequestParam String id) {
 @ResponseBody
 @GetMapping(value = "/person", params = {"name"})
 public List<PersonEntity> searchCastName(@RequestParam String name) {
-    return returnPersonResponseBody(getG().V().has("name", textContainsFuzzy(name)).or().has("name", textContainsRegex(".*" + name + ".*")));
+    return returnPersonResponseBody(getG().V().has("name", textContainsFuzzy(name)).out());
 }
 
 @ResponseBody
@@ -86,7 +86,7 @@ public List<MovieEntity> getPlayed(@RequestParam String id) {
 @ResponseBody
 @GetMapping(value = "/played", params = {"name"})
 public List<MovieEntity> getPlayedName(@RequestParam String name) {
-    return returnMovieResponseBody(getG().V().has("name", textContainsFuzzy(name)).or().has("name", textContainsRegex(".*" + name + ".*")).out("acted"));
+    return returnMovieResponseBody(getG().V().has("name", textContainsFuzzy(name)).out("acted"));
 }
 
 @ResponseBody
@@ -98,7 +98,7 @@ public List<MovieEntity> getWorked(@RequestParam String id) {
 @ResponseBody
 @GetMapping(value = "/worked", params = {"name"})
 public List<MovieEntity> getWorkedName(@RequestParam String name) {
-    return returnMovieResponseBody(getG().V().has("name", textContainsFuzzy(name)).or().has("name", textContainsRegex(".*" + name + ".*")).out("worked"));
+    return returnMovieResponseBody(getG().V().has("name", textContainsFuzzy(name)).out("worked"));
 }
 
 private @NotNull List<CastEdgeEntity> returnCastResponseBody(@NotNull GraphTraversal<Vertex, Vertex> values, @NotNull GraphTraversal<Vertex, Edge> edges) {
