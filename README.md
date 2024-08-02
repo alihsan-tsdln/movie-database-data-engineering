@@ -21,6 +21,10 @@ This project is a movie data analysis platform that collects JSON formatted movi
 * NPM : 10.8.2
 * Node.js : 22.5.1
 
+# UML of the Project
+
+[UML class staj.pdf](https://github.com/user-attachments/files/16468677/UML.class.staj.pdf)
+
 # Installation
 ## Prerequisites
 * Java JDK 17
