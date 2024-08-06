@@ -23,7 +23,7 @@ This project is a movie data analysis platform that collects JSON formatted movi
 
 # UML of the Project
 
-[UML class staj.pdf](https://github.com/user-attachments/files/16468677/UML.class.staj.pdf)
+[UML of project.pdf](https://github.com/user-attachments/files/16468677/UML.class.staj.pdf)
 
 # Installation
 ## Prerequisites
