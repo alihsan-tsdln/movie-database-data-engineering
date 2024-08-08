@@ -36,6 +36,8 @@ services:
       - janusgraph
     environment:
       CASSANDRA_START_RPC : "true"
+    volumes:
+      - cassandra-data:/var/lib/cassandra
     networks:
       - jce-network
 
@@ -70,3 +72,4 @@ networks:
 
 volumes:
   janusgraph-default-data:
+  cassandra-data:

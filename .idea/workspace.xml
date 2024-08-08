@@ -5,8 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="342c41d1-17ff-41c8-a787-371e292fd690" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/entities/MovieCastEdgeEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/entities/MovieCrewEdgeEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/sparkSystem/CastEntity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/GetMovieData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/GetMovieData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/entities/MovieEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/api/entities/MovieEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphConsumer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphProducer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/janusSystem/JanusGraphProducer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/sparkSystem/SparkConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bigDataFactory/sparkSystem/SparkConverter.java" afterDir="false" />
     </list>
@@ -70,7 +77,7 @@
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.selected.configurable": "Errors",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>

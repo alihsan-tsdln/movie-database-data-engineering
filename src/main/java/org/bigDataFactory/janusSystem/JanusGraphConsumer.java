@@ -45,7 +45,6 @@ public class JanusGraphConsumer {
 
     public void loadEdgesCastToJanus(@NotNull Iterator<Row> iterator) {
         try {
-            System.out.println("Came Cast Partition");
             JanusGraphClient client = new JanusGraphClient();
             GraphTraversalSource g = client.getG();
             JanusGraph graph = client.getGraph();
@@ -54,10 +53,6 @@ public class JanusGraphConsumer {
                 Vertex v = g.V("person_" + info.getInt(0)).next();
                 Vertex movie = g.V("movie_" + info.getString(1)).next();
                 v.addEdge("acted", movie,
-                        "cast_id", info.getInt(2), "character", info.getString(3),
-                        "credit_id", info.getString(4), "order", info.getInt(5),
-                        "edge_type", "acted");
-                movie.addEdge("acted", v,
                         "cast_id", info.getInt(2), "character", info.getString(3),
                         "credit_id", info.getString(4), "order", info.getInt(5),
                         "edge_type", "acted");
@@ -84,17 +79,13 @@ public class JanusGraphConsumer {
                         "credit_id", info.getString(2), "department", info.getString(3),
                         "job", info.getString(4),
                         "edge_type", "worked");
-                movie.addEdge("worked", v,
-                        "credit_id", info.getString(2), "department", info.getString(3),
-                        "job", info.getString(4),
-                        "edge_type", "worked");
 
             }
             graph.tx().commit();
             graph.tx().close();
             client.closeConnection();
         } catch (Exception e) {
-            System.out.println(e.getLocalizedMessage());
+            e.printStackTrace();
         }
     }
 
@@ -116,7 +107,7 @@ public class JanusGraphConsumer {
             tx.close();
             client.closeConnection();
         } catch (Exception e) {
-            System.out.println(e.getLocalizedMessage());
+            e.printStackTrace();
         }
     }
 }

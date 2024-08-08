@@ -2,10 +2,7 @@ package org.bigDataFactory.janusSystem;
 
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.janusgraph.core.EdgeLabel;
-import org.janusgraph.core.PropertyKey;
-import org.janusgraph.core.SchemaViolationException;
-import org.janusgraph.core.VertexLabel;
+import org.janusgraph.core.*;
 import org.janusgraph.core.schema.Index;
 import org.janusgraph.core.schema.JanusGraphManagement;
 import org.janusgraph.core.schema.Mapping;
@@ -27,8 +24,10 @@ public class JanusGraphProducer {
     }
 
     public void createSchema() throws Exception {
-        JanusGraphClient  client = new JanusGraphClient();
+        JanusGraphClient client = new JanusGraphClient();
+        JanusGraphFactory.drop(client.getGraph());
         try {
+            client = new JanusGraphClient();
             JanusGraphManagement management = client.getGraph().openManagement();
 
             management.set("graph.set-vertex-id", true);

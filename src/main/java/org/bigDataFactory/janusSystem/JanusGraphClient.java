@@ -10,12 +10,10 @@ public class JanusGraphClient {
     public JanusGraphClient() {
         graph = JanusGraphConfiguration.getInstance().config("cql", "elasticsearch", "0.0.0.0",
                 "9042", "0.0.0.0", "9200").open();
-        System.out.println("opened client");
         g = graph.traversal();
     }
 
     public void closeConnection() throws Exception {
-        System.out.println("closed client");
         g.close();
         graph.close();
     }
